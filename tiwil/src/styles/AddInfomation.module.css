@@ -1,0 +1,61 @@
+/* AddInformation.module.css */
+.container {
+    padding: 20px;
+    max-width: 500px;
+    margin: 0 auto;
+    background-color: #fdfdfd;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  h1, h3, h4 {
+    color: #333;
+  }
+  
+  .formGroup {
+    margin-bottom: 20px;
+  }
+  
+  .formGroup label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .formGroup input,
+  .formGroup select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .childCounter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .childCounter button {
+    background-color: #e65c00;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+  }
+  
+  .childCounter span {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .saveButton {
+    width: 100%;
+    padding: 10px;
+    background-color: #ff6600;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  

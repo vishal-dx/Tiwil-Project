@@ -1,0 +1,208 @@
+/* General Page Styling */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  background: linear-gradient(-45deg, #f8e9ec, #fdf2f4, #f9e7eb, #fff0f2);
+  padding-bottom: 50px;
+}
+
+/* Hero Section */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 100px;
+  width: 90%;
+  text-align: center;
+  overflow: hidden;
+  padding: 20px 0;
+}
+
+/* Carousel Container */
+.carouselContainer {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+/* Carousel Slides */
+.carouselSlide {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+}
+
+.slide {
+  width: 100%;
+  flex: 0 0 100%;
+  text-align: center;
+}
+
+/* Hero Image */
+.heroImage {
+  width: 300px;
+  height: auto;
+  margin: 0 auto;
+}
+
+/* Text */
+.text {
+  font-size: 20px;
+  font-weight: bold;
+  color: #444;
+  text-align: center;
+  margin-top: 15px;
+  max-width: 600px;
+}
+
+/* Progress Indicator */
+.progressBoxContainer {
+  display: flex;
+  margin-top: 20px;
+  gap: 8px;
+}
+
+.progressBox {
+  width: 12px;
+  height: 12px;
+  background: #ddd;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.progressBox.active {
+  background: #ee4266;
+  transform: scale(1.2);
+}
+
+/* Why Choose Tiwil Section */
+.whyChoose {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: #fff;
+  padding: 40px 20px;
+  margin-top: 50px;
+  width: 90%;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.whyChoose h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ee4266;
+  margin-bottom: 20px;
+}
+
+.featuresContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.featureBox {
+  background: #fdf2f4;
+  border-radius: 10px;
+  padding: 20px;
+  width: 200px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: 0.3s;
+}
+
+.featureBox:hover {
+  transform: translateY(-5px);
+}
+
+.featureIcon {
+  font-size: 40px;
+  color: #ee4266;
+  margin-bottom: 10px;
+}
+
+.featureText {
+  font-size: 16px;
+  font-weight: 600;
+  color: #444;
+}
+
+/* Testimonials Section */
+.testimonials {
+  background: #f8e9ec;
+  padding: 40px 20px;
+  margin-top: 50px;
+  text-align: center;
+  width: 90%;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.testimonials h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ee4266;
+  margin-bottom: 20px;
+}
+
+.testimonialCard {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 10px auto;
+  max-width: 600px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.testimonialText {
+  font-size: 16px;
+  font-style: italic;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.testimonialAuthor {
+  font-size: 14px;
+  font-weight: bold;
+  color: #444;
+}
+
+/* Call-to-Action Section */
+.callToAction {
+  margin-top: 50px;
+  background: linear-gradient(-45deg, #ee4266, #f05171);
+  color: #fff;
+  text-align: center;
+  padding: 40px 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.callToAction h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.callToAction button {
+  background: #fff;
+  color: #ee4266;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.callToAction button:hover {
+  background: #fdf2f4;
+}

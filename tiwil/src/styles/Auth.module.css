@@ -1,0 +1,150 @@
+.authContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #fbe4e4;
+  text-align: center;
+}
+
+.logo {
+  width: 100px;
+  margin-bottom: 4px;
+}
+
+.welcomeText {
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 72px;
+  text-align: left;
+  margin-bottom: 0px;
+  margin-top: 0px;
+  text-underline-position: from-font;
+  text-decoration-skip-ink: none;
+}
+
+.input {
+  width: 80%;
+  max-width: 300px;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.button {
+  width: 80%;
+  max-width: 300px;
+  padding: 12px;
+  background-color: #ee4266;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.button:hover {
+  background-color: #d91b4a;
+}
+
+.message {
+  color: #f70505;
+  margin-top: 10px;
+}
+
+.socialIcons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.socialIcons img {
+  width: 40px;
+  cursor: pointer;
+}
+
+.toggleText {
+  margin-top: 20px;
+  color: #007bff;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.toggleText:hover {
+  text-decoration: underline;
+}
+
+/* Toggle Button Container */
+.toggleContainer {
+  display: flex;
+  width: 306px;
+  height: 37px;
+  border-radius: 7px;
+  border: 1px solid #ccc;
+  overflow: hidden;
+  margin: 20px auto;
+  font-family: 'Poppins', sans-serif;
+  min-height: 37px; /* Ensure container has a minimum height */
+}
+
+/* Individual Toggle Buttons */
+.toggleButton {
+  flex: 1;
+  display: flex;
+  justify-content: center; /* Horizontally center the text */
+  align-items: center; /* Vertically center the text */
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: background 0.3s ease, color 0.3s ease;
+  text-transform: capitalize; /* Capitalize the text */
+}
+
+/* Active (Pink) Button */
+.active {
+  background: #EE4266; /* Pink */
+  color: #fff;
+  font-weight: bold; /* Make text bold for the active state */
+}
+
+/* Inactive (Grey) Button */
+.toggleButton:not(.active) {
+  background: #FFFFFF;
+  color: #EE4266;
+}
+
+.orWith {
+  margin-top: 0px;
+  margin-bottom: 0px; 
+}
+
+/* Terms & Conditions Text */
+.termsText {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #555;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+.termsText span {
+  color: #EE4266;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Ensuring button spacing */
+.button + .termsText {
+  margin-top: 20px; /* Add margin to ensure space between button and terms text */
+}
+.textField{
+  margin-top: 0px;
+  margin-bottom: 0px;
+
+}

@@ -1,0 +1,91 @@
+.container {
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .header {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .profileImage {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .profileImage img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .uploadLabel {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #ee4266;
+    cursor: pointer;
+  }
+  
+  .formGroup {
+    margin-bottom: 15px;
+  }
+  
+  .formGroup label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+  }
+  
+  .formGroup input,
+  .formGroup select {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .saveButton {
+    width: 100%;
+    padding: 10px;
+    background-color: #ee4266;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .saveButton:hover {
+    background-color: #d93e5f;
+  }
+  .backButton {
+    padding: 10px;
+    background-color: #ffffff;
+    color: #ee4266;
+    border: 2px solid #ee4266;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    margin-top: 10px;
+    font-weight: bold;
+
+  }
+  
+  .backButton:hover {
+    background-color: #ee4266;
+    color: white;
+  }
+  
