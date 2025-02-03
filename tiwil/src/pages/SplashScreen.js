@@ -27,7 +27,7 @@ function SplashScreen() {
 
     // Navigate to Info Screen after 3 seconds
     const timer = setTimeout(() => {
-      navigate("/home");
+      navigate("/signup");
     }, 3000);
 
     return () => clearTimeout(timer);

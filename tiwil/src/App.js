@@ -7,7 +7,7 @@ import "./styles/global.css";
 import Profile from "./pages/Profile";
 import Account from "./pages/Account";
 import PrivateRoute from "./privateRoute/PrivateRoute";
-
+import AddInformation from "./pages/AddInfomation";
 function App() {
   return (
     <Routes>
@@ -17,14 +17,16 @@ function App() {
       <Route path="/signup" element={<Signup />} />
 
       {/* Protected Routes (Require Authentication) */}
+      <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
       <Route
-        path="/profile"
-        element={
-          <PrivateRoute>
-            <Profile />
-          </PrivateRoute>
-        }
-      />
+  path="/add-information"
+  element={
+    <PrivateRoute>
+      <AddInformation />
+    </PrivateRoute>
+  }
+/>
+
       <Route
         path="/account-setting"
         element={

@@ -12,6 +12,8 @@ app.use(cors());
 // Use the authentication routes
 app.use("/", router);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use('/profileImages', express.static(path.join(__dirname,'profileImages')));
+
 // Connect to the database
 connectDb();
 

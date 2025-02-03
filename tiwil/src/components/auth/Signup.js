@@ -43,30 +43,54 @@ function Signup() {
     }
   };
 
+  // const handleVerifyOTP = async () => {
+  //   setMessage("Verifying OTP...");
+  //   try {
+  //     const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/signup/verify-otp`, formData);
+  //       console.log(response,'5555555555555555555555555')
+  //     if (response.data.success) {
+  //       setMessage("Signup Successful!");
+  //       setFormData({
+  //           fullName: "",
+  //           email: "",
+  //           phoneNumber: "",
+  //           password: "", // Added password field
+  //           otp: "",
+  //         })
+  //         localStorage.setItem("fullname", response.data.user.fullName)
+  //         navigate('/signin')
+  //     } else {
+  //       setMessage(response.data.message);
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     setMessage(error.response?.data?.message || "Error verifying OTP.");
+  //   }
+  // };
   const handleVerifyOTP = async () => {
     setMessage("Verifying OTP...");
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/signup/verify-otp`, formData);
-        console.log(response,'5555555555555555555555555')
-      if (response.data.success) {
-        setMessage("Signup Successful!");
-        setFormData({
-            fullName: "",
-            email: "",
-            phoneNumber: "",
-            password: "", // Added password field
-            otp: "",
-          })
-          localStorage.setItem("fullname", response.data.user.fullName)
-          navigate('/signin')
-      } else {
-        setMessage(response.data.message);
-      }
+        const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/signup/verify-otp`, formData);
+        
+        if (response.data.success) {
+            setMessage("Signup Successful!");
+
+            // ✅ Save user data in localStorage for pre-filling profile
+            localStorage.setItem("fullName", response.data.user.fullName);
+            localStorage.setItem("email", response.data.user.email);
+            localStorage.setItem("phoneNumber", response.data.user.phoneNumber);
+            localStorage.setItem("token", response.data.token); // Save token for authentication
+
+            // ✅ Navigate to Profile Page
+            navigate('/profile');
+        } else {
+            setMessage(response.data.message);
+        }
     } catch (error) {
-      console.error(error);
-      setMessage(error.response?.data?.message || "Error verifying OTP.");
+        console.error(error);
+        setMessage(error.response?.data?.message || "Error verifying OTP.");
     }
-  };
+};
 
   return (
     <div className={styles.authContainer}>
