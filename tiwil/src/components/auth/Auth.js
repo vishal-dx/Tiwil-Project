@@ -50,6 +50,7 @@ function Auth() {
     setMessage("Verifying OTP...");
     try {
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/auth/verify-otp`, formData);
+      console.log(response,'22222222222222')
       if (response.data.success) {
         setMessage("Authentication Successful!");
         setFormData({

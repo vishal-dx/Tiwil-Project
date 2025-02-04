@@ -1,26 +1,26 @@
 import React, { useState } from "react";
 import styles from "../../styles/Auth.module.css";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-function Signup() {
+const Signup = () => {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     phoneNumber: "",
-    password: "", // Added password field
     otp: "",
   });
 
+  const [otpGenerated, setOtpGenerated] = useState(""); // Store generated OTP for display
   const [message, setMessage] = useState("");
-  const [confirmationResult, setConfirmationResult] = useState(false);
-  const navigate = useNavigate()
-  
-  // Handle input changes
+  const [isOtpSent, setIsOtpSent] = useState(false); // To show OTP field
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Handle Send OTP
   const handleSendOTP = async () => {
     setMessage("Sending OTP...");
     try {
@@ -28,73 +28,71 @@ function Signup() {
         fullName: formData.fullName,
         email: formData.email,
         phoneNumber: formData.phoneNumber,
-        password: formData.password, // Now including password
       });
 
       if (response.data.success) {
-        setConfirmationResult(true);
-        setMessage("OTP Sent Successfully! Check your email.");
+        setOtpGenerated(response.data.otp); // Display OTP for demo
+        setIsOtpSent(true);
+        setMessage("OTP Sent Successfully!");
       } else {
         setMessage(response.data.message);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error sending OTP:", error);
       setMessage(error.response?.data?.message || "Error sending OTP.");
     }
   };
 
-  // const handleVerifyOTP = async () => {
-  //   setMessage("Verifying OTP...");
-  //   try {
-  //     const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/signup/verify-otp`, formData);
-  //       console.log(response,'5555555555555555555555555')
-  //     if (response.data.success) {
-  //       setMessage("Signup Successful!");
-  //       setFormData({
-  //           fullName: "",
-  //           email: "",
-  //           phoneNumber: "",
-  //           password: "", // Added password field
-  //           otp: "",
-  //         })
-  //         localStorage.setItem("fullname", response.data.user.fullName)
-  //         navigate('/signin')
-  //     } else {
-  //       setMessage(response.data.message);
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     setMessage(error.response?.data?.message || "Error verifying OTP.");
-  //   }
-  // };
+  // Handle Verify OTP
   const handleVerifyOTP = async () => {
     setMessage("Verifying OTP...");
     try {
-        const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/signup/verify-otp`, formData);
-        
-        if (response.data.success) {
-            setMessage("Signup Successful!");
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/signup/verify-otp`, {
+        fullName: formData.fullName,
+        email: formData.email,
+        phoneNumber: formData.phoneNumber,
+        otp: formData.otp,
+      });
 
-            // ✅ Save user data in localStorage for pre-filling profile
-            localStorage.setItem("fullName", response.data.user.fullName);
-            localStorage.setItem("email", response.data.user.email);
-            localStorage.setItem("phoneNumber", response.data.user.phoneNumber);
-            localStorage.setItem("token", response.data.token); // Save token for authentication
+      if (response.data.success) {
+        setMessage("Signup Successful!");
 
-            // ✅ Navigate to Profile Page
-            navigate('/profile');
-        } else {
-            setMessage(response.data.message);
-        }
+        // Store user details in localStorage
+        localStorage.setItem("fullName", response.data.user.fullName);
+        localStorage.setItem("email", response.data.user.email);
+        localStorage.setItem("phoneNumber", response.data.user.phoneNumber);
+        localStorage.setItem("token", response.data.token);
+
+        navigate("/profile"); // Redirect to profile setup
+      } else {
+        setMessage(response.data.message);
+      }
     } catch (error) {
-        console.error(error);
-        setMessage(error.response?.data?.message || "Error verifying OTP.");
+      console.error("Error verifying OTP:", error);
+      setMessage(error.response?.data?.message || "Error verifying OTP.");
     }
-};
+  };
 
   return (
     <div className={styles.authContainer}>
-      <h1 className={styles.welcomeText}>Sign Up</h1>
+      <img src={`${process.env.PUBLIC_URL}/assets/TiwilLOGO 1.png`} alt="Tiwil Logo" className={styles.logo} />
+      <h1 className={styles.welcomeText}>Welcome</h1>
+      <p className={styles.subText}>Connect with your friends today!</p>
+      <div className={styles.tabContainer}>
+  <button
+    className={`${styles.tabButton} ${styles.activeTab}`} // Active state
+    onClick={() => navigate("/signup")}
+  >
+    Sign Up
+  </button>
+  <button
+    className={styles.tabButton}
+    onClick={() => navigate("/signin")} // Navigate to Sign In
+  >
+    Sign In
+  </button>
+</div>
+
 
       <input
         type="text"
@@ -123,27 +121,21 @@ function Signup() {
         className={styles.input}
       />
 
-      <input
-        type="password"
-        name="password"
-        placeholder="Password"
-        value={formData.password}
-        onChange={handleChange}
-        className={styles.input}
-      />
-
-      {confirmationResult && (
-        <input
-          type="text"
-          name="otp"
-          placeholder="Enter OTP"
-          value={formData.otp}
-          onChange={handleChange}
-          className={styles.input}
-        />
+      {isOtpSent && (
+        <>
+          <p className={styles.otpPopup}>Your OTP is: <strong>{otpGenerated}</strong></p>
+          <input
+            type="text"
+            name="otp"
+            placeholder="Enter OTP"
+            value={formData.otp}
+            onChange={handleChange}
+            className={styles.input}
+          />
+        </>
       )}
 
-      {!confirmationResult ? (
+      {!isOtpSent ? (
         <button className={styles.button} onClick={handleSendOTP}>
           Send OTP
         </button>
@@ -152,14 +144,11 @@ function Signup() {
           Verify OTP
         </button>
       )}
+      <p>By creating an account, I accept the Terms & Conditions & Privacy Policy</p>
 
       <p className={styles.message}>{message}</p>
-
-      <p className={styles.toggleText}>
-        Already have an account? <Link to="/signin">Sign in</Link>
-      </p>
     </div>
   );
-}
+};
 
 export default Signup;

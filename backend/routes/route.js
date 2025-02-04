@@ -1,17 +1,20 @@
 const express = require("express");
 // const { sendOTP, verifyOTP, loginUser } = require("../controllers/authController");
-const { sendOTP, verifyOTP, loginUser } = require("../controller/authController");
 const { getUserData, updateProfile, uploadImage, closeAccount } = require("../controller/userController");
 const { getProfile, saveProfileAndFamilyInfo, uploadProfileImage, getUserProfile, saveUserProfile } = require("../controller/profileController");
 const { verifyToken } = require("../middleware/validate");
 const { upload, profileUpload } = require("../middleware/multer");
 const { getFamilyInfo, saveFamilyInfo, familyUpload } = require("../controller/familyInfoController");
 const { getEvents } = require("../controller/eventsController");
+const {  sendLoginOTP, sendSignupOTP, verifySignupOTP, loginWithPhone } = require("../controller/authController");
 const router = express.Router();
 
-router.post("/signup/send-otp", sendOTP); // Send OTP for signup
-router.post("/signup/verify-otp", verifyOTP); // Verify OTP and create account
-router.post("/login", loginUser); // New API for login (without OTP)
+
+router.post("/signup/send-otp", sendSignupOTP); // Send OTP for signup
+router.post("/signup/verify-otp", verifySignupOTP); // Verify OTP and create account
+router.post("/login/send-otp", sendLoginOTP); // Send OTP for login
+router.post("/login/verify-otp", loginWithPhone); 
+
 router.get("/user-data", verifyToken, getUserData);
 
 
