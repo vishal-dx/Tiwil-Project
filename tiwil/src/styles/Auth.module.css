@@ -3,148 +3,114 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 20px;
+  background-color: #f9f9f9; /* Subtle background */
   height: 100vh;
-  background-color: #fbe4e4;
+  max-width: 400px; /* Centered form with restricted width */
+  margin: 0 auto;
+}
+
+.logoContainer {
   text-align: center;
+  margin-bottom: 20px;
 }
 
 .logo {
-  width: 100px;
-  margin-bottom: 4px;
+  width: 70px;
+  height: 70px;
+  margin-bottom: 10px;
+}
+
+.welcomeTitle {
+  font-size: 22px;
+  color: #000;
+  font-weight: bold;
+  margin: 0;
+}
+
+.welcomeSubtitle {
+  font-size: 14px;
+  color: #666;
+  margin: 5px 0 20px 0;
 }
 
 .welcomeText {
-  font-size: 40px;
-  font-weight: 500;
-  line-height: 72px;
-  text-align: left;
-  margin-bottom: 0px;
-  margin-top: 0px;
-  text-underline-position: from-font;
-  text-decoration-skip-ink: none;
+  font-size: 18px;
+  color: #c2185b;
+  margin-bottom: 20px;
 }
 
 .input {
-  width: 80%;
-  max-width: 300px;
-  padding: 10px;
+  width: 100%;
+  padding: 12px;
   margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 14px;
 }
 
 .button {
-  width: 80%;
-  max-width: 300px;
+  width: 100%;
   padding: 12px;
-  background-color: #ee4266;
+  background-color: #c2185b;
   color: white;
   border: none;
-  border-radius: 5px;
-  font-size: 18px;
+  border-radius: 25px; /* Rounded button */
+  font-size: 16px;
   cursor: pointer;
-  margin-top: 10px;
+  margin-top: 15px;
+  transition: background-color 0.3s;
 }
 
 .button:hover {
-  background-color: #d91b4a;
+  background-color: #a21648;
 }
 
 .message {
-  color: #f70505;
+  color: #c2185b;
   margin-top: 10px;
-}
-
-.socialIcons {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-top: 15px;
-}
-
-.socialIcons img {
-  width: 40px;
-  cursor: pointer;
+  text-align: center;
 }
 
 .toggleText {
   margin-top: 20px;
-  color: #007bff;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.toggleText:hover {
-  text-decoration: underline;
-}
-
-/* Toggle Button Container */
-.toggleContainer {
-  display: flex;
-  width: 306px;
-  height: 37px;
-  border-radius: 7px;
-  border: 1px solid #ccc;
-  overflow: hidden;
-  margin: 20px auto;
-  font-family: 'Poppins', sans-serif;
-  min-height: 37px; /* Ensure container has a minimum height */
-}
-
-/* Individual Toggle Buttons */
-.toggleButton {
-  flex: 1;
-  display: flex;
-  justify-content: center; /* Horizontally center the text */
-  align-items: center; /* Vertically center the text */
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 500;
-  transition: background 0.3s ease, color 0.3s ease;
-  text-transform: capitalize; /* Capitalize the text */
-}
-
-/* Active (Pink) Button */
-.active {
-  background: #EE4266; /* Pink */
-  color: #fff;
-  font-weight: bold; /* Make text bold for the active state */
-}
-
-/* Inactive (Grey) Button */
-.toggleButton:not(.active) {
-  background: #FFFFFF;
-  color: #EE4266;
-}
-
-.orWith {
-  margin-top: 0px;
-  margin-bottom: 0px; 
-}
-
-/* Terms & Conditions Text */
-.termsText {
-  text-align: center;
-  margin-top: 10px;
   font-size: 14px;
   color: #555;
-  margin-top: 0px;
-  margin-bottom: 0px;
+  text-align: center;
 }
 
-.termsText span {
-  color: #EE4266;
-  cursor: pointer;
+.toggleText a {
+  color: #c2185b;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.toggleText a:hover {
   text-decoration: underline;
 }
 
-/* Ensuring button spacing */
-.button + .termsText {
-  margin-top: 20px; /* Add margin to ensure space between button and terms text */
-}
-.textField{
-  margin-top: 0px;
-  margin-bottom: 0px;
+/* Make design responsive */
+@media (max-width: 480px) {
+  .authContainer {
+    padding: 15px;
+    max-width: 90%;
+  }
 
+  .logo {
+    width: 50px;
+    height: 50px;
+  }
+
+  .welcomeTitle {
+    font-size: 18px;
+  }
+
+  .welcomeSubtitle {
+    font-size: 12px;
+  }
+
+  .button {
+    font-size: 14px;
+    padding: 10px;
+  }
 }

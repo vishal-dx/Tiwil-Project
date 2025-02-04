@@ -8,6 +8,9 @@ import Profile from "./pages/Profile";
 import Account from "./pages/Account";
 import PrivateRoute from "./privateRoute/PrivateRoute";
 import AddInformation from "./pages/AddInfomation";
+import Dashboard from "./pages/Dashboard";
+import EventDetail from "./pages/EventDetail";
+
 function App() {
   return (
     <Routes>
@@ -35,6 +38,23 @@ function App() {
           </PrivateRoute>
         }
       />
+      <Route
+        path="/dashboard"
+        element={
+          <PrivateRoute>
+            <Dashboard />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/event-Detail"
+        element={
+          <PrivateRoute>
+            <EventDetail />
+          </PrivateRoute>
+        }
+      />
+
     </Routes>
   );
 }

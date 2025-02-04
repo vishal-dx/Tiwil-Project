@@ -1,29 +1,49 @@
-// const mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-// const siblingSchema = new mongoose.Schema({
-//   name: { type: String, required: true },
-//   dob: { type: Date, required: true },
-//   gender: { type: String, required: true },
-//   image: { type: String, required: false }, 
-// });
+const childSchema = new mongoose.Schema({
+  name: { type: String, required: false },
+  dob: { type: Date, required: false },
+  image: { type: String, required: false }, // Image field added
+});
 
-// const familyInfoSchema = new mongoose.Schema({
-//   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-//   father: {
-//     name: { type: String, required: false },
-//     dob: { type: Date, required: false },
-//     image: { type: String, required: false },
-//   },
-//   mother: {
-//     name: { type: String, required: false },
-//     dob: { type: Date, required: false },
-//     image: { type: String, required: false },
-//   },
-//   parentAnniversary: {
-//     date: { type: Date, required: false },
-//     image: { type: String, required: false },
-//   },
-//   siblings: [siblingSchema], // Array of sibling documents
-// });
+const siblingSchema = new mongoose.Schema({
+  name: { type: String, required: false },
+  dob: { type: Date, required: false },
+  image: { type: String, required: false }, // Image field added
+});
 
-// module.exports = mongoose.model("FamilyInfo", familyInfoSchema);
+const familyInfoSchema = new mongoose.Schema(
+  {
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    father: {
+      name: { type: String, required: false },
+      dob: { type: Date, required: false },
+      image: { type: String, required: false }, // Image field added
+    },
+    mother: {
+      name: { type: String, required: false },
+      dob: { type: Date, required: false },
+      image: { type: String, required: false }, // Image field added
+    },
+    parentAnniversary: {
+      date: { type: Date, required: false },
+      image: { type: String, required: false }, // Image field added
+    },
+    spouse: {
+      name: { type: String, required: false },
+      dob: { type: Date, required: false },
+      image: { type: String, required: false }, // Image field added
+    },
+    marriageAnniversary: {
+      date: { type: Date, required: false },
+      image: { type: String, required: false }, // Image field added
+    },
+    hasChildren: { type: Boolean, default: false },
+    numberOfChildren: { type: Number, default: 0 },
+    children: [childSchema], // Child schema already supports image
+    siblings: [siblingSchema], // Sibling schema already supports image
+  },
+  { timestamps: true }
+);
+
+module.exports = mongoose.model("FamilyInfo", familyInfoSchema);

@@ -1,34 +1,41 @@
-/* AddInformation.module.css */
-
 /* Global Container */
+body {
+  background-color: #fdeff4; /* Light pink background for the entire page */
+  margin: 0;
+  padding: 0;
+  font-family: "Arial", sans-serif;
+}
+
 .container {
   padding: 24px;
-  max-width: 600px;
+  max-width: 80%;
   margin: 40px auto;
-  background: #ffffff;
+  background: #ffffff; /* White background for the form container */
   border-radius: 12px;
-  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease-in-out;
 }
 
 .container:hover {
-  box-shadow: 0px 6px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.12);
 }
 
 /* Section Headings */
-h1 {
-  font-size: 26px;
-  color: #222;
-  font-weight: 600;
+h2 {
+  font-size: 28px;
+  color: #c2185b; /* Dark pink heading */
+  font-weight: 700;
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
-h3, h4 {
-  font-size: 18px;
-  color: #444;
-  font-weight: 500;
-  margin-bottom: 12px;
+h3 {
+  font-size: 20px;
+  color: #d81b60; /* Bold pink for section titles */
+  font-weight: 600;
+  margin-bottom: 16px;
+  border-bottom: 2px solid #ec407a; /* Lighter pink border for separation */
+  padding-bottom: 8px;
 }
 
 /* Form Group */
@@ -38,27 +45,27 @@ h3, h4 {
 
 .formGroup label {
   display: block;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
-  color: #555;
-  margin-bottom: 6px;
+  color: #d81b60; /* Purple for labels */
+  margin-bottom: 8px;
 }
 
 .formGroup input,
 .formGroup select {
   width: 100%;
   padding: 10px;
-  font-size: 15px;
-  border: 1.5px solid #ddd;
-  border-radius: 6px;
-  background: #fdfdfd;
-  transition: all 0.2s ease-in-out;
+  font-size: 16px;
+  border: 1.5px solid #f48fb1; /* Light pink border */
+  border-radius: 8px;
+  background: #fce4ec; /* Subtle pink background for inputs */
+  transition: all 0.3s ease-in-out;
 }
 
 .formGroup input:focus,
 .formGroup select:focus {
-  border-color: #ff7b00;
-  box-shadow: 0px 0px 6px rgba(255, 123, 0, 0.2);
+  border-color: #f48fb1; /* Darker pink border on focus */
+  box-shadow: 0px 0px 6px rgba(236, 64, 122, 0.4);
   outline: none;
 }
 
@@ -67,47 +74,83 @@ h3, h4 {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 .childCounter button {
-  background-color: #ff7b00;
+  background-color: #ff5c5c; /* Dark pink button */
   color: white;
-  padding: 6px 12px;
+  padding: 8px 14px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.3s ease-in-out;
 }
 
 .childCounter button:hover {
-  background-color: #e06b00;
+  background-color: #ff5c5c; /* Slightly darker pink on hover */
 }
 
 .childCounter span {
   font-size: 18px;
   font-weight: 600;
-  color: #222;
+  color: #4a148c; /* Deep purple text */
 }
 
-/* Save Button */
-.saveButton {
-  width: 100%;
-  padding: 12px;
-  background: linear-gradient(135deg, #ff7b00 0%, #ff3d00 100%);
-  color: white;
+/* Add & Remove Buttons */
+.addButton, .removeButton {
+  padding: 10px 16px;
   border: none;
   border-radius: 8px;
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
 }
 
+.addButton {
+  background-color: #81c784; /* Green for adding siblings/children */
+  color: white;
+}
+
+.addButton:hover {
+  background-color: #66bb6a; /* Darker green on hover */
+}
+
+.removeButton {
+  background-color: #e57373; 
+  color: white;
+  margin-left: 5px;
+}
+
+.removeButton:hover {
+  background-color: #ef5350; /* Darker red on hover */
+}
+.saveBtnBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Save Button */
+.saveButton {
+  width: 50%;
+  padding: 14px;
+  background: linear-gradient(135deg, #ff5c5c 0%, #ff5c5c 100%); /* Gradient pink */
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  margin-top: 20px;
+}
+
 .saveButton:hover {
-  background: linear-gradient(135deg, #ff6600 0%, #e63200 100%);
+  background: linear-gradient(135deg, #ff5c5c 0%, #ff5c5c 100%);
   transform: scale(1.02);
 }
 
@@ -116,5 +159,13 @@ h3, h4 {
   .container {
     max-width: 90%;
     padding: 20px;
+  }
+
+  h2 {
+    font-size: 24px;
+  }
+
+  h3 {
+    font-size: 18px;
   }
 }
