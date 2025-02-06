@@ -10,6 +10,7 @@ import PrivateRoute from "./privateRoute/PrivateRoute";
 import AddInformation from "./pages/AddInfomation";
 import Dashboard from "./pages/Dashboard";
 import EventDetail from "./pages/EventDetail";
+import FamilyInformation from "./pages/FamilyInformation";
 
 function App() {
   return (
@@ -51,6 +52,14 @@ function App() {
         element={
           <PrivateRoute>
             <EventDetail />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/familyInfo"
+        element={
+          <PrivateRoute>
+            <FamilyInformation />
           </PrivateRoute>
         }
       />

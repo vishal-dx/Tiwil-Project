@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {jwtDecode} from "jwt-decode"; // Fixed import for jwtDecode
+import { jwtDecode } from "jwt-decode"; // Fixed import for jwtDecode
 import { CgProfile } from "react-icons/cg";
 import { HiMenu, HiX } from "react-icons/hi"; // Icons for hamburger and close
 import styles from "./Navbar.module.css";
@@ -20,7 +20,7 @@ function Navbar() {
       if (token) {
         try {
           const decoded = jwtDecode(token);
-          console.log(decoded)
+          console.log(decoded);
           setUser(decoded);
           if (storedFullName) setFullName(storedFullName);
         } catch (error) {
@@ -56,9 +56,13 @@ function Navbar() {
   };
 
   const handleAccountSetting = () => {
-    navigate("/account-setting")
-  }
-  
+    navigate("/account-setting");
+  };
+
+  const closeSidePanel = () => {
+    setIsSidePanelOpen(false);
+  };
+
   return (
     <nav className={styles.navbar}>
       {/* Logo */}
@@ -73,52 +77,60 @@ function Navbar() {
       <div className={styles.navButtons}>
         {user ? (
           <div className={styles.profileContainer}>
-            <div className={styles.profileInfo} onClick={() => setShowDropdown(!showDropdown)}>
+            <div
+              className={styles.profileInfo}
+              onClick={() => setShowDropdown(!showDropdown)}
+            >
               <CgProfile className={styles.profileIcon} />
               <span className={styles.profileName}>{fullName}</span>
             </div>
             {showDropdown && (
               <div className={styles.dropdownMenu}>
-                <p onClick={handleNavigateToProfile}>Profile</p> {/* Navigate to Profile */}
-                <p onClick={handleAccountSetting}>Account settting</p> {/* Account */}
-                <p onClick={handleLogout}>Logout</p> {/* Logout */}
+                <p onClick={handleNavigateToProfile}>Profile</p>
+                <p onClick={handleAccountSetting}>Account Setting</p>
+                <p onClick={handleLogout}>Logout</p>
               </div>
             )}
           </div>
         ) : (
-          <>
           <div className={styles.btns}>
-          <div className={styles.signInbtn}>
-            <button onClick={() => navigate("/signin")}>Signin</button>
+            <div className={styles.signInbtn}>
+              <button onClick={() => navigate("/signin")}>Signin</button>
             </div>
             <div className={styles.signUpbtn}>
-            <button onClick={() => navigate("/signup")}>Signup</button>
+              <button onClick={() => navigate("/signup")}>Signup</button>
             </div>
-            </div>
-          </>
+          </div>
         )}
       </div>
 
       {/* Hamburger Menu */}
-      <div className={styles.hamburger} onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}>
+      <div
+        className={styles.hamburger}
+        onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}
+      >
         {isSidePanelOpen ? <HiX size={30} /> : <HiMenu size={30} />}
       </div>
 
-      {/* Side Panel */}
+      {/* Overlay and Side Panel */}
       {isSidePanelOpen && (
-        <div className={styles.sidePanel}>
-          {user ? (
-            <>
-              <p onClick={handleNavigateToProfile}>Profile</p>
-              <p onClick={handleLogout}>Logout</p>
-            </>
-          ) : (
-            <>
-              <p onClick={() => navigate("/signin")}>Signin</p>
-              <p onClick={() => navigate("/signup")}>Signup</p>
-            </>
-          )}
-        </div>
+        <>
+          <div className={styles.overlay} onClick={closeSidePanel}></div>
+          <div className={styles.sidePanel}>
+            {user ? (
+              <>
+                <p onClick={handleNavigateToProfile}>Profile</p>
+                <p onClick={handleAccountSetting}>Account</p>
+                <p onClick={handleLogout}>Logout</p>
+              </>
+            ) : (
+              <>
+                <p onClick={() => navigate("/signin")}>Signin</p>
+                <p onClick={() => navigate("/signup")}>Signup</p>
+              </>
+            )}
+          </div>
+        </>
       )}
     </nav>
   );

@@ -36,9 +36,9 @@ const sendSignupOTP = async (req, res) => {
 
 // **Signup: Verify OTP**
 const verifySignupOTP = async (req, res) => {
-  const { fullName, email, phoneNumber, otp } = req.body;
+  const { fullName, phoneNumber, otp } = req.body;
 
-  if (!email || !phoneNumber || !fullName || !otp) {
+  if (!phoneNumber || !fullName || !otp) {
     return res.status(400).json({ success: false, message: "All fields are required" });
   }
 
@@ -53,11 +53,11 @@ const verifySignupOTP = async (req, res) => {
     await OTPModel.deleteOne({ phoneNumber });
 
     // Create the user
-    const newUser = await User.create({ fullName, email, phoneNumber });
+    const newUser = await User.create({ fullName, phoneNumber });
 
     // Generate JWT Token
     const token = jwt.sign(
-      { userId: newUser._id, email: newUser.email, phoneNumber: newUser.phoneNumber, role: "user" },
+      { userId: newUser._id,  phoneNumber: newUser.phoneNumber, role: "user" },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
@@ -65,7 +65,7 @@ const verifySignupOTP = async (req, res) => {
     res.json({
       success: true,
       message: "User registered successfully",
-      user: { fullName, email, phoneNumber },
+      user: { fullName, phoneNumber },
       token,
     });
   } catch (error) {

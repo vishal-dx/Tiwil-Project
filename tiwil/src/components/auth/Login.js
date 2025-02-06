@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styles from "../../styles/Auth.module.css";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({
@@ -148,6 +148,8 @@ const SignIn = () => {
           Verify OTP
         </button>
       )}
+
+<p>New on Tiwil <Link to="/signup">Signup</Link></p>
 
       <p className={styles.message}>{message}</p>
     </div>

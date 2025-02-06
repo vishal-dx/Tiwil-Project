@@ -1,208 +1,196 @@
-/* General Page Styling */
+/* General Container */
 .container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
+  font-family: Arial, sans-serif;
+  background-color: #fdeff4;
   min-height: 100vh;
-  background: linear-gradient(-45deg, #f8e9ec, #fdf2f4, #f9e7eb, #fff0f2);
-  padding-bottom: 50px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
 }
 
-/* Hero Section */
-.hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 100px;
-  width: 90%;
-  text-align: center;
-  overflow: hidden;
-  padding: 20px 0;
-}
-
-/* Carousel Container */
-.carouselContainer {
-  width: 100%;
-  overflow: hidden;
+/* Carousel Section */
+.carousel {
   position: relative;
-  display: flex;
-  justify-content: center;
+  margin-top: 80px; /* Avoid navbar overlap */
 }
 
-/* Carousel Slides */
 .carouselSlide {
   display: flex;
   transition: transform 0.5s ease-in-out;
 }
 
 .slide {
-  width: 100%;
   flex: 0 0 100%;
   text-align: center;
 }
 
-/* Hero Image */
-.heroImage {
-  width: 300px;
+.carouselImage {
+  width: 100%;
   height: auto;
-  margin: 0 auto;
+  max-height: 300px;
+  object-fit: contain;
 }
 
-/* Text */
-.text {
-  font-size: 20px;
+.message {
+  font-size: 18px;
   font-weight: bold;
-  color: #444;
-  text-align: center;
-  margin-top: 15px;
-  max-width: 600px;
+  color: #c2185b;
+  margin-top: 10px;
 }
 
-/* Progress Indicator */
 .progressBoxContainer {
   display: flex;
-  margin-top: 20px;
-  gap: 8px;
+  justify-content: center;
+  margin-top: 10px;
 }
 
 .progressBox {
   width: 12px;
   height: 12px;
-  background: #ddd;
+  background-color: #eee;
   border-radius: 50%;
+  margin: 0 5px;
   cursor: pointer;
-  transition: 0.3s;
+  transition: background-color 0.3s ease;
 }
 
 .progressBox.active {
-  background: #ee4266;
-  transform: scale(1.2);
+  background-color: #c2185b;
 }
 
-/* Why Choose Tiwil Section */
-.whyChoose {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  background: #fff;
-  padding: 40px 20px;
-  margin-top: 50px;
-  width: 90%;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+/* Section Styling */
+.section {
+  padding: 20px 0;
+  margin-bottom: 30px;
 }
 
-.whyChoose h2 {
-  font-size: 24px;
-  font-weight: bold;
-  color: #ee4266;
+.section h2 {
+  font-size: 22px;
+  color: #c2185b;
   margin-bottom: 20px;
+  text-align: center;
 }
 
-.featuresContainer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+/* Grid for Events */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
 }
 
-.featureBox {
-  background: #fdf2f4;
-  border-radius: 10px;
-  padding: 20px;
-  width: 200px;
-  text-align: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: 0.3s;
+/* Horizontal Scroll Styling */
+.horizontalScroll {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  padding: 16px;
+  scroll-behavior: smooth;
 }
 
-.featureBox:hover {
-  transform: translateY(-5px);
+.horizontalScroll::-webkit-scrollbar {
+  height: 8px;
 }
 
-.featureIcon {
-  font-size: 40px;
-  color: #ee4266;
-  margin-bottom: 10px;
+.horizontalScroll::-webkit-scrollbar-thumb {
+  background: #c2185b;
+  border-radius: 4px;
 }
 
-.featureText {
-  font-size: 16px;
-  font-weight: 600;
-  color: #444;
+.horizontalScroll::-webkit-scrollbar-track {
+  background: #f0f0f0;
 }
 
-/* Testimonials Section */
-.testimonials {
-  background: #f8e9ec;
-  padding: 40px 20px;
-  margin-top: 50px;
-  text-align: center;
-  width: 90%;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.testimonials h2 {
-  font-size: 24px;
-  font-weight: bold;
-  color: #ee4266;
-  margin-bottom: 20px;
-}
-
-.testimonialCard {
+/* Card Styling */
+.card {
   background: #fff;
-  border-radius: 10px;
-  padding: 20px;
-  margin: 10px auto;
-  max-width: 600px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 
-.testimonialText {
-  font-size: 16px;
-  font-style: italic;
-  color: #555;
-  margin-bottom: 10px;
+.cardImageWrapper {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
 }
 
-.testimonialAuthor {
+.cardImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cardDetails {
+  padding: 16px;
+  text-align: center;
+}
+
+.cardDetails h3 {
+  font-size: 18px;
+  color: #c2185b;
+  margin-bottom: 5px;
+}
+
+.cardDate {
   font-size: 14px;
-  font-weight: bold;
-  color: #444;
+  color: #555;
+  margin-bottom: 5px;
 }
 
-/* Call-to-Action Section */
-.callToAction {
-  margin-top: 50px;
-  background: linear-gradient(-45deg, #ee4266, #f05171);
-  color: #fff;
-  text-align: center;
-  padding: 40px 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.cardTag {
+  background-color: white;
+  color: #ff5c5c;
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  border: solid 1px #ff5c5c;
 }
 
-.callToAction h2 {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
-
-.callToAction button {
-  background: #fff;
-  color: #ee4266;
-  padding: 10px 20px;
+/* Plan Button Styling */
+.planButton {
+  padding: 6px 17px;
+  background-color: #ff5c5c;
+  color: white;
   border: none;
-  border-radius: 5px;
-  font-size: 16px;
+  border-radius: 20px;
+  margin-top: 10px;
   font-weight: bold;
   cursor: pointer;
-  transition: 0.3s;
+  transition: background-color 0.3s;
 }
 
-.callToAction button:hover {
-  background: #fdf2f4;
+.planButton:hover {
+  background-color: #ee4266;
+}
+
+/* Footer Padding */
+.footer {
+  padding: 20px 0;
+  background-color: #fff;
+  color: #c2185b;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* Responsive Grid */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .horizontalScroll {
+    gap: 10px;
+  }
 }

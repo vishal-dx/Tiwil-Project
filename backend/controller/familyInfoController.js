@@ -335,5 +335,82 @@ const generateEvents = async (userId, familyInfo) => {
   await Event.insertMany(events);
 };
 
+// const updateFamilyInfo = async (req, res) => {
+//   try {
+//     const userId = req.user.userId;
+//     const { relation, name, dob, anniversary } = req.body;
+//     let image = null;
 
-module.exports = { getFamilyInfo, saveFamilyInfo, familyUpload };
+//     if (req.file) {
+//       image = `uploads/${req.file.filename}`;
+//     }
+
+//     const updateField = {};
+//     if (relation === "Father") updateField.father = { name, dob, image };
+//     if (relation === "Mother") updateField.mother = { name, dob, image };
+//     if (relation === "Wife") updateField.spouse = { name, dob, anniversary, image };
+//     if (relation.startsWith("Child")) {
+//       const childIndex = parseInt(relation.split(" ")[1]) - 1;
+//       updateField[`children.${childIndex}`] = { name, dob, image };
+//     }
+//     if (relation.startsWith("Sibling")) {
+//       const siblingIndex = parseInt(relation.split(" ")[1]) - 1;
+//       updateField[`siblings.${siblingIndex}`] = { name, dob, image };
+//     }
+
+//     const familyInfo = await FamilyInfo.findOneAndUpdate(
+//       { userId },
+//       { $set: updateField },
+//       { new: true }
+//     );
+
+//     if (!familyInfo) {
+//       return res.status(404).json({ success: false, message: "Family info not found." });
+//     }
+
+//     res.status(200).json({ success: true, data: familyInfo });
+//   } catch (error) {
+//     console.error("Error updating family info:", error);
+//     res.status(500).json({ success: false, message: "Failed to update family info." });
+//   }
+// };
+
+const updateFamilyInfo = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { relation, name, dob, anniversary } = req.body;
+    let image = req.file ? `uploads/${req.file.filename}` : null;
+
+    const updateField = {};
+    if (relation === "Father") updateField.father = { name, dob, image };
+    if (relation === "Mother") updateField.mother = { name, dob, image };
+    if (relation === "Wife") updateField.spouse = { name, dob, anniversary, image };
+    if (relation.startsWith("Child")) {
+      const childIndex = parseInt(relation.split(" ")[1]) - 1;
+      updateField[`children.${childIndex}`] = { name, dob, image };
+    }
+    if (relation.startsWith("Sibling")) {
+      const siblingIndex = parseInt(relation.split(" ")[1]) - 1;
+      updateField[`siblings.${siblingIndex}`] = { name, dob, image };
+    }
+
+    const familyInfo = await FamilyInfo.findOneAndUpdate(
+      { userId },
+      { $set: updateField },
+      { new: true }
+    );
+
+    if (!familyInfo) {
+      return res.status(404).json({ success: false, message: "Family info not found." });
+    }
+
+    const updatedData = await FamilyInfo.findOne({ userId }); // ✅ Fetch full updated data
+    res.status(200).json({ success: true, data: updatedData }); // ✅ Send full updated data
+  } catch (error) {
+    console.error("Error updating family info:", error);
+    res.status(500).json({ success: false, message: "Failed to update family info." });
+  }
+};
+
+
+module.exports = { getFamilyInfo, saveFamilyInfo, familyUpload, updateFamilyInfo };

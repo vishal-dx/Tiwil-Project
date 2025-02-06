@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../styles/AddInfomation.module.css"; // Reusing AddInformation styles
 import axios from "axios";
+import { IoMdCamera } from "react-icons/io";
 
 function Profile() {
   const navigate = useNavigate();
 
   const [userData, setUserData] = useState({
     fullName: localStorage.getItem("fullName") || "",
-    email: localStorage.getItem("email") || "",
+    email:  "",
     phoneNumber: localStorage.getItem("phoneNumber") || "",
     gender: "",
     dob: "",
@@ -106,15 +107,25 @@ function Profile() {
     <div className={styles.container}>
       <h2>Profile Setup</h2>
 
-      <div className={styles.profileImageContainer}>
-        Profile Picture
-        <img
-          src={`${process.env.REACT_APP_BASE_URL}${userData.profileImage}`}
-          alt=""
-          className={styles.profileImage}
-        />
-        <input type="file" accept="image/*" onChange={handleProfileImageChange} />
-      </div>
+      <div className={styles.profileSection}>
+             <div className={styles.profileImageWrapper}>
+               <img
+                 src={
+                  selectedProfileImage
+                     ? URL.createObjectURL(selectedProfileImage)
+                     : userData.profileImage
+                     ? `${process.env.REACT_APP_BASE_URL}${userData.profileImage}`
+                     : `${process.env.PUBLIC_URL}/assets/ProfilDefaulticon.png`
+                 }
+                 alt="Profile"
+                 className={styles.profileImage}
+               />
+               <label className={styles.cameraIcon}>
+                 <IoMdCamera size={20} />
+                 <input type="file" style={{ display: "none" }} onChange={handleProfileImageChange} />
+               </label>
+             </div>
+           </div>
 
       <div className={styles.form}>
         <div className={styles.formGroup}>
@@ -128,7 +139,10 @@ function Profile() {
 
         <div className={styles.formGroup}>
           <label>Email</label>
-          <input type="email" value={userData.email} disabled />
+          <input type="email" 
+          value={userData.email}
+          onChange={(e) => setUserData({ ...userData, email: e.target.value })}
+            />
         </div>
 
         <div className={styles.formGroup}>

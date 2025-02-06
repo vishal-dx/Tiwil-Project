@@ -1,10 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/navbar/Navbar";
 import Footer from "../components/footer/Footer";
+import Card from "../components/card/Card"; // Reusable Card Component
 import styles from "../styles/Home.module.css";
+import axios from "axios";
 
 function Home() {
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [events, setEvents] = useState([]);
+  const [invitations, setInvitations] = useState([]);
+  const [friendRequests, setFriendRequests] = useState([]);
 
   const messages = [
     "Add & Organize Events and Celebrate Moments, Together.",
@@ -20,13 +25,57 @@ function Home() {
     `${process.env.PUBLIC_URL}/assets/Group 38375 (3).png`,
   ];
 
-  // Automatically change slide every 3 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentMessageIndex((prevIndex) => (prevIndex + 1) % messages.length);
     }, 3000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    fetchEvents();
+    fetchInvitations();
+    fetchFriendRequests();
+  }, []);
+
+  const fetchEvents = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/events`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      if (response.data.success) {
+        setEvents(
+          Object.values(response.data.data).flat().map((event) => ({
+            ...event,
+            image: event.image.startsWith("http")
+              ? event.image
+              : `${process.env.REACT_APP_BASE_URL}/${event.image}`, // Prepend base URL for relative paths
+          }))
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching events:", error);
+    }
+  };
+  
+
+  const fetchFriendRequests = async () => {
+    setFriendRequests([
+      { id: 1, name: "Rahul Sharma", image: "/assets/user.png" },
+      { id: 2, name: "Emily Watson", image: "/assets/user.png" },
+      { id: 3, name: "Amit Singh", image: "/assets/user.png" },
+    ]);
+  };
+  
+  const fetchInvitations = async () => {
+    setInvitations([
+      { id: 1, name: "John's Birthday Party", date: "2025-03-15", image: "/assets/invite.png" },
+      { id: 2, name: "Alice's Wedding", date: "2025-04-20", image: "/assets/invite.png" },
+    ]);
+  };
+  
 
   const handleProgressClick = (index) => {
     setCurrentMessageIndex(index);
@@ -36,32 +85,64 @@ function Home() {
     <div className={styles.container}>
       <Navbar />
 
-      {/* Hero Section with Carousel Effect */}
-      <div className={styles.hero}>
-        <div className={styles.carouselContainer}>
-          <div
-            className={styles.carouselSlide}
-            style={{ transform: `translateX(-${currentMessageIndex * 100}%)` }}
-          >
-            {images.map((image, index) => (
-              <div key={index} className={styles.slide}>
-                <img src={image} alt={`Slide ${index + 1}`} className={styles.heroImage} />
-                <p className={styles.text}>{messages[index]}</p>
-              </div>
-            ))}
-          </div>
+      {/* Carousel Section */}
+      <div className={styles.carousel}>
+        <div
+          className={styles.carouselSlide}
+          style={{ transform: `translateX(-${currentMessageIndex * 100}%)` }}
+        >
+          {images.map((image, index) => (
+            <div key={index} className={styles.slide}>
+              <img src={image} alt={`Slide ${index + 1}`} className={styles.carouselImage} />
+              <p className={styles.message}>{messages[index]}</p>
+            </div>
+          ))}
+        </div>
+        <div className={styles.progressBoxContainer}>
+          {messages.map((_, index) => (
+            <div
+              key={index}
+              className={`${styles.progressBox} ${
+                currentMessageIndex === index ? styles.active : ""
+              }`}
+              onClick={() => handleProgressClick(index)}
+            />
+          ))}
         </div>
       </div>
 
-      {/* Progress Indicator */}
-      <div className={styles.progressBoxContainer}>
-        {messages.map((_, index) => (
-          <div
-            key={index}
-            className={`${styles.progressBox} ${currentMessageIndex === index ? styles.active : ""}`}
-            onClick={() => handleProgressClick(index)}
-          />
-        ))}
+      {/* Events Section */}
+      <div className={styles.section}>
+        <h2>Upcoming Events</h2>
+        <div className={styles.grid}>
+          {events.length > 0 ? (
+            events.map((event, index) => <Card key={index} item={event} type="event" />)
+          ) : (
+            <p className={styles.emptyText}>No upcoming events.</p>
+          )}
+        </div>
+      </div>
+
+      {/* Invitations Section */}
+      <div className={styles.section}>
+        <h2>Invitations</h2>
+        <div className={styles.grid}>
+          {invitations.length > 0 ? (
+            invitations.map((invite) => <Card key={invite.id} item={invite} type="invitation" />)
+          ) : (
+            <p className={styles.emptyText}>No invitations at the moment.</p>
+          )}
+        </div>
+      </div>
+
+      {/* Invite Friends Section */}
+      <div className={styles.section}>
+        <h2>Invite Friends to Join</h2>
+        <div className={styles.grid}>
+          {friendRequests.map((friend) => (
+            <Card key={friend.id} item={friend} type="friend" />
+          ))}
+        </div>
       </div>
 
       <Footer />

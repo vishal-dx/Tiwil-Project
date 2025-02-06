@@ -4,7 +4,7 @@ const { getUserData, updateProfile, uploadImage, closeAccount } = require("../co
 const { getProfile, saveProfileAndFamilyInfo, uploadProfileImage, getUserProfile, saveUserProfile } = require("../controller/profileController");
 const { verifyToken } = require("../middleware/validate");
 const { upload, profileUpload } = require("../middleware/multer");
-const { getFamilyInfo, saveFamilyInfo, familyUpload } = require("../controller/familyInfoController");
+const { getFamilyInfo, saveFamilyInfo, familyUpload, updateFamilyInfo } = require("../controller/familyInfoController");
 const { getEvents } = require("../controller/eventsController");
 const {  sendLoginOTP, sendSignupOTP, verifySignupOTP, loginWithPhone } = require("../controller/authController");
 const router = express.Router();
@@ -32,13 +32,19 @@ router.post(
     familyUpload, // Use updated multer configuration
     saveFamilyInfo
 );
+
+router.put(
+    "/family-info/update",
+    verifyToken,
+    upload.single("image"), // Multer for image upload
+    updateFamilyInfo
+  );
+
+
 router.get("/events", verifyToken, getEvents);
 
-
 // Route for uploading images
-router.post("/upload-image", verifyToken, upload.single("image"), uploadImage);
 router.post("/profile", verifyToken, upload.single("profileImage"), saveProfileAndFamilyInfo);
-router.post("/upload-profile-image", profileUpload.single("profileImage"), uploadProfileImage);
 router.delete("/profile", verifyToken, closeAccount)
 
 module.exports = router;

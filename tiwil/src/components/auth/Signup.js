@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styles from "../../styles/Auth.module.css";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -49,7 +49,6 @@ const Signup = () => {
     try {
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/signup/verify-otp`, {
         fullName: formData.fullName,
-        email: formData.email,
         phoneNumber: formData.phoneNumber,
         otp: formData.otp,
       });
@@ -59,7 +58,6 @@ const Signup = () => {
 
         // Store user details in localStorage
         localStorage.setItem("fullName", response.data.user.fullName);
-        localStorage.setItem("email", response.data.user.email);
         localStorage.setItem("phoneNumber", response.data.user.phoneNumber);
         localStorage.setItem("token", response.data.token);
 
@@ -103,16 +101,7 @@ const Signup = () => {
         className={styles.input}
       />
 
-      <input
-        type="email"
-        name="email"
-        placeholder="Email Address"
-        value={formData.email}
-        onChange={handleChange}
-        className={styles.input}
-      />
-
-      <input
+        <input
         type="tel"
         name="phoneNumber"
         placeholder="Phone Number"
@@ -147,6 +136,7 @@ const Signup = () => {
       <p>By creating an account, I accept the Terms & Conditions & Privacy Policy</p>
 
       <p className={styles.message}>{message}</p>
+      <p>Aready have an account <Link to="/signin">Signin</Link></p>
     </div>
   );
 };

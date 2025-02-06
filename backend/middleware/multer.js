@@ -34,6 +34,7 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
   fileFilter,
 });
+
 const profileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     const profileFolder = path.join(__dirname, "../profileImages/");
