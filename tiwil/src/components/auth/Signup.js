@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Swal from "sweetalert2"; // Import SweetAlert
 import styles from "../../styles/Auth.module.css";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
@@ -12,7 +13,6 @@ const Signup = () => {
   });
 
   const [otpGenerated, setOtpGenerated] = useState(""); // Store generated OTP for display
-  const [message, setMessage] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false); // To show OTP field
   const navigate = useNavigate();
 
@@ -22,8 +22,13 @@ const Signup = () => {
 
   // Handle Send OTP
   const handleSendOTP = async () => {
-    setMessage("Sending OTP...");
     try {
+      // Swal.fire({
+      //   title: "Sending OTP...",
+      //   allowOutsideClick: false,
+      //   didOpen: () => Swal.showLoading(),
+      // });
+
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/signup/send-otp`, {
         fullName: formData.fullName,
         email: formData.email,
@@ -33,43 +38,46 @@ const Signup = () => {
       if (response.data.success) {
         setOtpGenerated(response.data.otp); // Display OTP for demo
         setIsOtpSent(true);
-        setMessage("OTP Sent Successfully!");
+        Swal.fire("Success", "OTP Sent Successfully!", "success");
       } else {
-        setMessage(response.data.message);
+        Swal.fire("Error", response.data.message, "error");
       }
     } catch (error) {
       console.error("Error sending OTP:", error);
-      setMessage(error.response?.data?.message || "Error sending OTP.");
+      Swal.fire("Error", error.response?.data?.message || "Error sending OTP.", "error");
     }
   };
 
   // Handle Verify OTP
   const handleVerifyOTP = async () => {
-    setMessage("Verifying OTP...");
     try {
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/signup/verify-otp`, {
         fullName: formData.fullName,
         phoneNumber: formData.phoneNumber,
         otp: formData.otp,
       });
-
+  
       if (response.data.success) {
-        setMessage("Signup Successful!");
-
-        // Store user details in localStorage
+        Swal.fire("Success", "Signup Successful!", "success");
+  
         localStorage.setItem("fullName", response.data.user.fullName);
         localStorage.setItem("phoneNumber", response.data.user.phoneNumber);
         localStorage.setItem("token", response.data.token);
-
-        navigate("/profile"); // Redirect to profile setup
+        localStorage.setItem("userId", response.data.userId);
+        localStorage.setItem("profileStatus", false);
+        localStorage.setItem("onboardingStatus", false);
+  
+        navigate("/profile"); // Force profile setup first
       } else {
-        setMessage(response.data.message);
+        Swal.fire("Error", response.data.message, "error");
       }
     } catch (error) {
       console.error("Error verifying OTP:", error);
-      setMessage(error.response?.data?.message || "Error verifying OTP.");
+      Swal.fire("Error", error.response?.data?.message || "Error verifying OTP.", "error");
     }
   };
+  
+  
 
   return (
     <div className={styles.authContainer}>
@@ -77,20 +85,19 @@ const Signup = () => {
       <h1 className={styles.welcomeText}>Welcome</h1>
       <p className={styles.subText}>Connect with your friends today!</p>
       <div className={styles.tabContainer}>
-  <button
-    className={`${styles.tabButton} ${styles.activeTab}`} // Active state
-    onClick={() => navigate("/signup")}
-  >
-    Sign Up
-  </button>
-  <button
-    className={styles.tabButton}
-    onClick={() => navigate("/signin")} // Navigate to Sign In
-  >
-    Sign In
-  </button>
-</div>
-
+        <button
+          className={`${styles.tabButton} ${styles.activeTab}`} // Active state
+          onClick={() => navigate("/signup")}
+        >
+          Sign Up
+        </button>
+        <button
+          className={styles.tabButton}
+          onClick={() => navigate("/signin")} // Navigate to Sign In
+        >
+          Sign In
+        </button>
+      </div>
 
       <input
         type="text"
@@ -101,7 +108,7 @@ const Signup = () => {
         className={styles.input}
       />
 
-        <input
+      <input
         type="tel"
         name="phoneNumber"
         placeholder="Phone Number"
@@ -112,7 +119,9 @@ const Signup = () => {
 
       {isOtpSent && (
         <>
-          <p className={styles.otpPopup}>Your OTP is: <strong>{otpGenerated}</strong></p>
+          <p className={styles.otpPopup}>
+            Your OTP is: <strong>{otpGenerated}</strong>
+          </p>
           <input
             type="text"
             name="otp"
@@ -134,8 +143,6 @@ const Signup = () => {
         </button>
       )}
       <p>By creating an account, I accept the Terms & Conditions & Privacy Policy</p>
-
-      <p className={styles.message}>{message}</p>
       <p>Aready have an account <Link to="/signin">Signin</Link></p>
     </div>
   );

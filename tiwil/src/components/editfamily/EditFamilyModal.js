@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import styles from "./EditFamilyModel.module.css";
+import { FaCamera } from "react-icons/fa";
 
 const EditFamilyModal = ({ relation, detail, onClose, onSave }) => {
   const [updatedDetail, setUpdatedDetail] = useState({ ...detail });
@@ -33,7 +34,7 @@ const EditFamilyModal = ({ relation, detail, onClose, onSave }) => {
 
     try {
       const response = await axios.put(
-        `${process.env.REACT_APP_BASE_URL}/family-info/update`,
+        `${process.env.REACT_APP_BASE_URL}/family-info/update/${detail.relationId}`,
         formData,
         {
           headers: {
@@ -44,8 +45,8 @@ const EditFamilyModal = ({ relation, detail, onClose, onSave }) => {
       );
 
       if (response.data.success) {
-        onSave(); // Trigger re-fetch of family data
-        onClose(); // Close modal
+        onSave();
+        onClose();
       } else {
         alert(response.data.message);
       }
@@ -60,12 +61,25 @@ const EditFamilyModal = ({ relation, detail, onClose, onSave }) => {
       <div className={styles.modalContent}>
         <h2>Edit {relation}</h2>
 
+        {/* Image Upload */}
+        <div className={styles.imageUpload}>
+          <label className={styles.imageLabel}>
+            <img
+              src={selectedImage ? URL.createObjectURL(selectedImage) : `${process.env.REACT_APP_BASE_URL}/${updatedDetail.image}`}
+              alt="profile"
+              className={styles.profileImage}
+            />
+            <input type="file" className={styles.fileInput} onChange={handleImageChange} />
+            <FaCamera className={styles.cameraIcon} />
+          </label>
+        </div>
+
         <div className={styles.formGroup}>
           <label>Name</label>
           <input
             type="text"
-            value={updatedDetail.name || ""}
-            onChange={(e) => handleInputChange("name", e.target.value)}
+            value={updatedDetail.fullName || ""}
+            onChange={(e) => handleInputChange("fullName", e.target.value)}
           />
         </div>
 
@@ -78,29 +92,20 @@ const EditFamilyModal = ({ relation, detail, onClose, onSave }) => {
           />
         </div>
 
-        {relation === "Wife" && (
+        {relation.includes("Anniversary") && (
           <div className={styles.formGroup}>
-            <label>Anniversary</label>
+            <label>Anniversary Date</label>
             <input
               type="date"
-              value={updatedDetail.anniversary || ""}
-              onChange={(e) => handleInputChange("anniversary", e.target.value)}
+              value={updatedDetail.anniversaryDate ? updatedDetail.anniversaryDate.split("T")[0] : ""}
+              onChange={(e) => handleInputChange("anniversaryDate", e.target.value)}
             />
           </div>
         )}
 
-        <div className={styles.formGroup}>
-          <label>Image</label>
-          <input type="file" onChange={handleImageChange} />
-        </div>
-
         <div className={styles.buttonGroup}>
-          <button className={styles.saveButton} onClick={handleSave}>
-            Save
-          </button>
-          <button className={styles.cancelButton} onClick={onClose}>
-            Cancel
-          </button>
+          <button className={styles.saveButton} onClick={handleSave}>Save</button>
+          <button className={styles.cancelButton} onClick={onClose}>Cancel</button>
         </div>
       </div>
     </div>

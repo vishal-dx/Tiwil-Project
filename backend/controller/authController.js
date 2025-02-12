@@ -1,6 +1,8 @@
 const OTPModel = require("../models/OTPModel");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const UserProfile = require("../models/UserProfile");
+const FamilyInfo = require("../models/FamilyInfo");
 
 // **Signup: Generate OTP**
 const sendSignupOTP = async (req, res) => {
@@ -35,6 +37,7 @@ const sendSignupOTP = async (req, res) => {
 };
 
 // **Signup: Verify OTP**
+// **Signup: Verify OTP**
 const verifySignupOTP = async (req, res) => {
   const { fullName, phoneNumber, otp } = req.body;
 
@@ -57,7 +60,7 @@ const verifySignupOTP = async (req, res) => {
 
     // Generate JWT Token
     const token = jwt.sign(
-      { userId: newUser._id,  phoneNumber: newUser.phoneNumber, role: "user" },
+      { userId: newUser._id, phoneNumber: newUser.phoneNumber, role: "user" },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
@@ -65,6 +68,7 @@ const verifySignupOTP = async (req, res) => {
     res.json({
       success: true,
       message: "User registered successfully",
+      userId: newUser._id, // ✅ Include userId in response
       user: { fullName, phoneNumber },
       token,
     });
@@ -73,6 +77,7 @@ const verifySignupOTP = async (req, res) => {
     res.status(500).json({ success: false, message: "Error verifying OTP" });
   }
 };
+
 
 // **Login: Generate OTP**
 const sendLoginOTP = async (req, res) => {
@@ -132,21 +137,24 @@ const loginWithPhone = async (req, res) => {
 
     // Generate JWT Token
     const token = jwt.sign(
-      { userId: user._id, email: user.email, phoneNumber: user.phoneNumber, role: user.role },
+      { userId: user._id,  phoneNumber: user.phoneNumber, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
+// Fetch User Profile
+const userProfile = await UserProfile.findOne({ userId: user._id });
+const profileStatus = userProfile?.profileStatus || false;
+const onboardingStatus = await FamilyInfo.findOne({ userId: user._id }).then((info) => info?.onboardingStatus || false);
 
-    res.json({
-      success: true,
-      message: "Login successful",
-      token,
-      user: {
-        fullName: user.fullName,
-        email: user.email,
-        phoneNumber: user.phoneNumber,
-      },
-    });
+res.status(200).json({
+  success: true,
+  message: "Login successful.",
+  token,
+  userId: user._id,
+  profileStatus,
+  onboardingStatus,
+  user: userProfile || "Profile setup required", // Optional: include user profile details
+});
   } catch (error) {
     console.error("Error logging in:", error);
     res.status(500).json({ success: false, message: "Error logging in" });

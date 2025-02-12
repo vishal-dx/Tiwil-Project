@@ -60,6 +60,8 @@ h3 {
   border-radius: 8px;
   background: #fce4ec; /* Subtle pink background for inputs */
   transition: all 0.3s ease-in-out;
+  box-sizing: border-box; /* Prevent padding from affecting width */
+  appearance: none;
 }
 
 .formGroup input:focus,
@@ -200,3 +202,7 @@ h3 {
     font-size: 18px;
   }
 }
+/* .forms{
+  display: flex;
+  flex-direction: column;
+} */

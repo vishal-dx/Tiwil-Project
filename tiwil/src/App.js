@@ -2,68 +2,83 @@ import { Route, Routes } from "react-router-dom";
 import SplashScreen from "./pages/SplashScreen";
 import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
-import Home from "./pages/Home";
-import "./styles/global.css";
 import Profile from "./pages/Profile";
 import Account from "./pages/Account";
-import PrivateRoute from "./privateRoute/PrivateRoute";
+import ProtectedRoute from "./privateRoute/ProtectedRoute";
 import AddInformation from "./pages/AddInfomation";
 import Dashboard from "./pages/Dashboard";
 import EventDetail from "./pages/EventDetail";
 import FamilyInformation from "./pages/FamilyInformation";
+import Notifications from "./pages/Notifications";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<SplashScreen />} />
-      <Route path="/home" element={<Home />} />
       <Route path="/signin" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
 
-      {/* Protected Routes (Require Authentication) */}
-      <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+      {/* ✅ Profile Setup */}
       <Route
-  path="/add-information"
-  element={
-    <PrivateRoute>
-      <AddInformation />
-    </PrivateRoute>
-  }
-/>
-
-      <Route
-        path="/account-setting"
+        path="/profile"
         element={
-          <PrivateRoute>
-            <Account />
-          </PrivateRoute>
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
         }
       />
+
+      {/* ✅ Onboarding Page */}
+      <Route
+        path="/add-information"
+        element={
+          <ProtectedRoute>
+            <AddInformation />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* ✅ Dashboard & Other Protected Routes */}
       <Route
         path="/dashboard"
         element={
-          <PrivateRoute>
+          <ProtectedRoute>
             <Dashboard />
-          </PrivateRoute>
+          </ProtectedRoute>
         }
       />
       <Route
-        path="/event-Detail"
+        path="/account-setting"
         element={
-          <PrivateRoute>
+          <ProtectedRoute>
+            <Account />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/event-detail/:eventId"
+        element={
+          <ProtectedRoute>
             <EventDetail />
-          </PrivateRoute>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/familyInfo"
         element={
-          <PrivateRoute>
+          <ProtectedRoute>
             <FamilyInformation />
-          </PrivateRoute>
+          </ProtectedRoute>
         }
       />
-
+      <Route
+        path="/notification"
+        element={
+          <ProtectedRoute>
+            <Notifications />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }

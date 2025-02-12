@@ -16,7 +16,7 @@ const Card = ({ item, type }) => {
           <img
             src={getImageSrc()}
             alt={item.name}
-            onError={(e) => (e.target.src = `${process.env.PUBLIC_URL}/assets/default-profile.png`)} // Fallback image
+            onError={(e) => (e.target.src = `${process.env.PUBLIC_URL}/assets/ProfilDefaulticon.png`)} // Fallback image
             className={styles.cardImage}
           />
         </div>

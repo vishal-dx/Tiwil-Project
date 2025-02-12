@@ -5,7 +5,7 @@ import EditFamilyModal from "../components/editfamily/EditFamilyModal";
 import Navbar from "../components/navbar/Navbar";
 
 const FamilyInformation = () => {
-  const [familyInfo, setFamilyInfo] = useState(null);
+  const [familyMembers, setFamilyMembers] = useState([]);
   const [editModal, setEditModal] = useState({
     isOpen: false,
     relation: null,
@@ -24,7 +24,7 @@ const FamilyInformation = () => {
       });
 
       if (response.data.success) {
-        setFamilyInfo(response.data.data);
+        setFamilyMembers(response.data.data.familyMembers || []);
       }
     } catch (error) {
       console.error("Error fetching family information:", error);
@@ -40,65 +40,30 @@ const FamilyInformation = () => {
   };
 
   const handleUpdateFamilyInfo = () => {
-    fetchFamilyInfo(); // Re-fetch data from API
+    fetchFamilyInfo(); // ✅ Re-fetch updated family data
     handleCloseEditModal();
   };
-
-  if (!familyInfo) {
-    return <div className={styles.loader}>Loading family information...</div>;
-  }
 
   return (
     <div className={styles.container}>
       <Navbar />
       <h1 className={styles.header}>View Detail</h1>
-      {familyInfo.father && (
+
+      {familyMembers.map((member, index) => (
         <FamilyCard
-          relation="Father"
-          detail={familyInfo.father}
-          onEdit={() => handleOpenEditModal("Father", familyInfo.father)}
+          key={index}
+          relation={member.relationType}
+          detail={member}
+          onEdit={() => handleOpenEditModal(member.relationType, member)}
         />
-      )}
-      {familyInfo.mother && (
-        <FamilyCard
-          relation="Mother"
-          detail={familyInfo.mother}
-          onEdit={() => handleOpenEditModal("Mother", familyInfo.mother)}
-        />
-      )}
-      {familyInfo.spouse && (
-        <FamilyCard
-          relation="Wife"
-          detail={familyInfo.spouse}
-          onEdit={() => handleOpenEditModal("Spouse", familyInfo.spouse)}
-        />
-      )}
-      {familyInfo.children &&
-        familyInfo.children.map((child, index) => (
-          <FamilyCard
-            key={`Child-${index}`}
-            relation={`Child ${index + 1}`}
-            detail={child}
-            onEdit={() => handleOpenEditModal("Children", child)}
-          />
-        ))}
-      {familyInfo.siblings &&
-        familyInfo.siblings.map((sibling, index) => (
-          <FamilyCard
-            key={`Sibling-${index}`}
-            relation={`Sibling ${index + 1}`}
-            detail={sibling}
-            onEdit={() => handleOpenEditModal("Siblings", sibling)}
-          />
-        ))}
-      <button className={styles.button}>Let's Go</button>
+      ))}
 
       {editModal.isOpen && (
         <EditFamilyModal
           relation={editModal.relation}
           detail={editModal.detail}
           onClose={handleCloseEditModal}
-          onSave={handleUpdateFamilyInfo} // Re-fetch family data after saving
+          onSave={handleUpdateFamilyInfo} // ✅ Updates UI
         />
       )}
     </div>
@@ -107,34 +72,33 @@ const FamilyInformation = () => {
 
 const FamilyCard = ({ relation, detail, onEdit }) => {
   return (
-    <div className={styles.card}>
+    <div className={`${styles.card} ${relation.includes("Anniversary") ? styles.anniversaryCard : ""}`}>
       <div className={styles.cardHeader}>
         <h2>{relation.toUpperCase()}</h2>
-        <button className={styles.menuButton} onClick={onEdit}>
-          ⋮
-        </button>
+        <div className={styles.menuContainer}>
+          <button className={styles.menuButton} onClick={onEdit}>⋮</button>
+          <div className={styles.menuOptions}>
+            <button onClick={onEdit}>Edit Details</button>
+          </div>
+        </div>
       </div>
       <div className={styles.cardBody}>
-        <img
-          src={
-            detail.image
-              ? `${process.env.REACT_APP_BASE_URL}/${detail.image}?timestamp=${new Date().getTime()}`
-              : `${process.env.PUBLIC_URL}/assets/default-profile.png`
-          }
-          alt={relation}
-          className={styles.image}
-        />
+      <img
+  src={
+    detail.image
+      ? `${process.env.REACT_APP_BASE_URL}/${detail.image}` // ✅ Corrected relative path
+      : `${process.env.PUBLIC_URL}/assets/ProfilDefaulticon.png`
+  }
+  alt={relation}
+  className={styles.image}
+/>
+
         <div className={styles.info}>
-          <p>
-            <strong>Name:</strong> {detail.name}
-          </p>
-          <p>
-            <strong>Date of Birth:</strong> {new Date(detail.dob).toLocaleDateString() || "Not Provided"}
-          </p>
-          {detail.anniversary && (
-            <p>
-              <strong>Anniversary:</strong> {new Date(detail.anniversary).toLocaleDateString()}
-            </p>
+          <p><strong>Name:</strong> {detail.fullName}</p>
+          {relation.includes("Anniversary") ? (
+            <p><strong>Anniversary Date:</strong> {new Date(detail.anniversaryDate).toLocaleDateString()}</p>
+          ) : (
+            <p><strong>Date of Birth:</strong> {new Date(detail.dob).toLocaleDateString() || "Not Provided"}</p>
           )}
         </div>
       </div>

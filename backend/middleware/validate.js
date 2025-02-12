@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 const verifyToken = (req, res, next) => {
   const token = req.header("Authorization");
-  console.log(token,'2121212121212')
+  console.log("Received Token:", token);
 
   if (!token) {
     return res.status(401).json({ success: false, message: "Access Denied. No token provided." });
@@ -10,11 +10,13 @@ const verifyToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token.replace("Bearer ", ""), process.env.JWT_SECRET);
-    console.log(decoded,'44444444444444444444')
+    console.log("Decoded Token:", decoded);
+
     req.user = decoded;
     next();
   } catch (error) {
-    res.status(400).json({ success: false, message: "Invalid Token" });
+    console.error("Token Verification Error:", error);
+    return res.status(400).json({ success: false, message: "Invalid Token" });
   }
 };
 

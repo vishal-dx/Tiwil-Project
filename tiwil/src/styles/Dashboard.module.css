@@ -1,13 +1,13 @@
 .dashboard {
-    background-color: #fdeff4;
-    min-height: 100vh;
-  }
-  
-  .container {
-    padding: 16px;
-    max-width: 1200px;
-    margin: 72px auto;
-  }
+  background-color: #fdeff4;
+  min-height: 100vh;
+}
+
+.container {
+  padding: 16px;
+  max-width: 1200px;
+  margin: 72px auto;
+}
   
   h2 {
     font-size: 24px;
@@ -16,13 +16,12 @@
     margin-bottom: 16px;
   }
   
-  /* Unified Grid Layout for all events */
-  .eventGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-  }
-  
+/* Unified Grid Layout for all events */
+.eventGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
   /* Event Card */
   .eventCard {
     background: #fff;
@@ -45,8 +44,8 @@
   .eventImage {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-  }
+    object-fit: contain;
+      }
   
   /* Favorite Icon */
   .favoriteIcon {
@@ -194,7 +193,7 @@
   /* Responsive Search Bar */
   @media (max-width: 480px) {
     .searchBar {
-      flex-direction: column;
+      flex-direction: row;
       align-items: stretch;
     }
   
@@ -202,8 +201,7 @@
       width: 100%;
     }
   }
-  
-  
+ 
   /* Responsive Design */
   @media (max-width: 768px) {
     .eventGrid {
@@ -216,4 +214,141 @@
       grid-template-columns: 1fr;
     }
   }
+  .loader {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #c2185b;
+    margin-top: 20px;
+  }
+  .noEvents {
+    text-align: center;
+    font-size: 18px;
+    color: #999;
+  }
+
+
+  .dashboard {
+    background-color: #fdeff4;
+    min-height: 100vh;
+  }
+  
+  .container {
+    padding: 16px;
+    max-width: 1200px;
+    margin: 72px auto;
+  }
+  
+  /* Loader */
+  .loader {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #c2185b;
+    margin-top: 20px;
+  }
+  
+  /* No Events Found */
+  .noEvents {
+    text-align: center;
+    font-size: 18px;
+    color: #999;
+  }
+  
+  /* Floating Button Container (Fixed at Bottom-Right) */
+.floatingContainer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Floating Add Button */
+.floatingButton {
+  width: 55px;
+  height: 55px;
+  background-color: #ff5c5c;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  position: relative;  /* Ensure it stays in place */
+}
+
+.floatingButton:hover {
+  background-color: #e64747;
+  transform: scale(1.1);
+}
+
+.floatingButton:active {
+  transform: scale(0.95);
+}
+
+/* Add Member & Event Menu */
+.addOptions {
+  background: white;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+  position: absolute; /* Keeps it in place */
+  bottom: 65px; /* Positions above floating button */
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  animation: fadeIn 0.2s ease-in-out;
+  width: 150px;
+}
+
+.addOptions button {
+  width: 100%;
+  padding: 12px;
+  background: #ff5c5c;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.addOptions button:first-child {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.addOptions button:hover {
+  background: #e64747;
+}
+
+/* Close Button for Floating Menu */
+.closeAddOptions {
+  width: 35px;
+  height: 35px;
+  background-color: #ff5c5c;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.closeAddOptions:hover {
+  background-color: #e64747;
+  transform: scale(1.1);
+}
+
+
   

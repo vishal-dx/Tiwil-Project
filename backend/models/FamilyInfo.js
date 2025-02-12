@@ -1,47 +1,53 @@
 const mongoose = require("mongoose");
 
-const childSchema = new mongoose.Schema({
-  name: { type: String, required: false },
-  dob: { type: Date, required: false },
-  image: { type: String, required: false }, // Image field added
-});
-
-const siblingSchema = new mongoose.Schema({
-  name: { type: String, required: false },
-  dob: { type: Date, required: false },
-  image: { type: String, required: false }, // Image field added
+const familyMemberSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  fullName: { type: String, required: true },
+  dob: {
+    type: Date,
+    required: function () {
+      return this.eventType === "Birthday"; // Only required for birthdays
+    },
+  },
+  anniversaryDate: {
+    type: Date,
+    required: function () {
+      return this.eventType === "Anniversary"; // Only required for anniversaries
+    },
+  },
+  gender: {
+    type: String,
+    enum: ["Male", "Female", "Other"],
+    required: function () {
+      return !["Parent Anniversary", "Marriage Anniversary"].includes(this.relationType);
+    },
+  },
+  relationType: {
+    type: String,
+    enum: [
+      "Father",
+      "Mother",
+      "Parent Anniversary",
+      "Spouse",
+      "Marriage Anniversary",
+      "Child",
+      "Sibling",
+      "Other",
+    ],
+    required: true,
+  },
+  eventType: { type: String, enum: ["Birthday", "Anniversary", "Other"], required: true },
+  image: { type: String, required: false },
+  relationId: { type: mongoose.Schema.Types.ObjectId, ref: "FamilyInfo", required: false },
+  eventId: { type: mongoose.Schema.Types.ObjectId, ref: "Event", required: false },
 });
 
 const familyInfoSchema = new mongoose.Schema(
   {
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    father: {
-      name: { type: String, required: false },
-      dob: { type: Date, required: false },
-      image: { type: String, required: false }, // Image field added
-    },
-    mother: {
-      name: { type: String, required: false },
-      dob: { type: Date, required: false },
-      image: { type: String, required: false }, // Image field added
-    },
-    parentAnniversary: {
-      date: { type: Date, required: false },
-      image: { type: String, required: false }, // Image field added
-    },
-    spouse: {
-      name: { type: String, required: false },
-      dob: { type: Date, required: false },
-      image: { type: String, required: false }, // Image field added
-    },
-    marriageAnniversary: {
-      date: { type: Date, required: false },
-      image: { type: String, required: false }, // Image field added
-    },
-    hasChildren: { type: Boolean, default: false },
-    numberOfChildren: { type: Number, default: 0 },
-    children: [childSchema], // Child schema already supports image
-    siblings: [siblingSchema], // Sibling schema already supports image
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, unique: true },
+    familyMembers: [familyMemberSchema],
+    addMember: { type: Boolean, default: false },
+    onboardingStatus: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

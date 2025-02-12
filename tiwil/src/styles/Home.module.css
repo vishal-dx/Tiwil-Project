@@ -1,17 +1,12 @@
-/* General Container */
+/* Home.module.css */
 .container {
+  padding-top: 60px; /* Ensure content doesn't go behind the navbar */
   font-family: Arial, sans-serif;
-  background-color: #fdeff4;
-  min-height: 100vh;
-  margin: 0 auto;
-  padding: 0 20px;
-  box-sizing: border-box;
 }
 
-/* Carousel Section */
 .carousel {
   position: relative;
-  margin-top: 80px; /* Avoid navbar overlap */
+  margin-top: 80px;
 }
 
 .carouselSlide {
@@ -58,10 +53,8 @@
   background-color: #c2185b;
 }
 
-/* Section Styling */
 .section {
   padding: 20px 0;
-  margin-bottom: 30px;
 }
 
 .section h2 {
@@ -71,112 +64,34 @@
   text-align: center;
 }
 
-/* Grid for Events */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
 }
 
-/* Horizontal Scroll Styling */
-.horizontalScroll {
-  display: flex;
-  overflow-x: auto;
-  gap: 16px;
-  padding: 16px;
-  scroll-behavior: smooth;
-}
-
-.horizontalScroll::-webkit-scrollbar {
-  height: 8px;
-}
-
-.horizontalScroll::-webkit-scrollbar-thumb {
-  background: #c2185b;
-  border-radius: 4px;
-}
-
-.horizontalScroll::-webkit-scrollbar-track {
-  background: #f0f0f0;
-}
-
-/* Card Styling */
-.card {
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-.cardImageWrapper {
-  position: relative;
-  width: 100%;
-  height: 180px;
-  overflow: hidden;
-}
-
-.cardImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.cardDetails {
-  padding: 16px;
-  text-align: center;
-}
-
-.cardDetails h3 {
-  font-size: 18px;
-  color: #c2185b;
-  margin-bottom: 5px;
-}
-
-.cardDate {
-  font-size: 14px;
-  color: #555;
-  margin-bottom: 5px;
-}
-
-.cardTag {
-  background-color: white;
-  color: #ff5c5c;
-  font-size: 12px;
-  padding: 5px 10px;
-  border-radius: 20px;
-  border: solid 1px #ff5c5c;
-}
-
-/* Plan Button Styling */
-.planButton {
-  padding: 6px 17px;
-  background-color: #ff5c5c;
+.seeMoreButton {
+  background-color: #ff3366;
   color: white;
+  padding: 10px 20px;
   border: none;
-  border-radius: 20px;
-  margin-top: 10px;
-  font-weight: bold;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  display: block;
+  margin: 20px auto;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
 }
 
-.planButton:hover {
-  background-color: #ee4266;
+.seeMoreButton:hover {
+  background-color: #c2185b;
 }
 
-/* Footer Padding */
-.footer {
-  padding: 20px 0;
-  background-color: #fff;
-  color: #c2185b;
-  text-align: center;
-  font-size: 14px;
+.emptyText {
+  color: #888;
+  font-size: 16px;
 }
 
-/* Responsive Grid */
 @media (max-width: 768px) {
   .grid {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -186,11 +101,5 @@
 @media (max-width: 480px) {
   .grid {
     grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .horizontalScroll {
-    gap: 10px;
   }
 }

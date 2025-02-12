@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../styles/AddInfomation.module.css";
+import Swal from "sweetalert2"; // Import SweetAlert2
 import axios from "axios";
 
 function AddInformation() {
@@ -19,42 +20,19 @@ function AddInformation() {
     siblings: [],
     gender: "",
     maritalStatus: "",
-    images: [], // ✅ Initialize images as an empty array
+    images: {},
   });
-  
 
-  // useEffect(() => {
-  //   const fetchFamilyInfo = async () => {
-  //     try {
-  //       const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/family-info`, {
-  //         headers: { Authorization: `Bearer ${token}` },
-  //       });
-
-  //       if (response.data.success) {
-  //         const familyData = response.data.data;
-  //         setFormData({
-  //           ...familyData,
-  //           gender: familyData.gender || "",
-  //           maritalStatus: familyData.maritalStatus || "",
-  //           children: familyData.children || [],
-  //           siblings: familyData.siblings || [],
-  //         });
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching family information:", error);
-  //     }
-  //   };
-
-  //   fetchFamilyInfo();
-  // }, [token]);
   useEffect(() => {
     const fetchUserData = async () => {
       try {
+        console.log("Fetching user data...");
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/user-profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         if (response.data.success) {
+          console.log("User data fetched:", response.data.data);
           const userData = response.data.data;
           setFormData((prev) => ({
             ...prev,
@@ -63,7 +41,7 @@ function AddInformation() {
           }));
         }
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("Failed to fetch user data:", error);
       }
     };
 
@@ -80,89 +58,164 @@ function AddInformation() {
       return { ...prev, [type]: { ...prev[type], [field]: value } };
     });
   };
-  const handleImageChange = (file) => {
-    if (file) {
-      setFormData((prev) => ({
-        ...prev,
-        images: [...prev.images, file], // ✅ Store File objects, not strings
-      }));
-    }
+
+  const handleImageChange = (event, fieldName) => {
+    const files = event.target.files;
+  
+    setFormData((prev) => {
+      const updatedImages = { ...prev.images };
+  
+      if (fieldName.includes("Images")) {
+        updatedImages[fieldName] = [...(updatedImages[fieldName] || []), ...files];
+      } else {
+        updatedImages[fieldName] = files[0];
+      }
+  
+      return { ...prev, images: updatedImages };
+    });
   };
   
-  
+   
+
   const handleSave = async () => {
     try {
+      console.log("Saving family information...");
       const formDataToSend = new FormData();
+      const userId = localStorage.getItem("userId");
   
-      // ✅ Convert the structured data to a JSON string
-      const jsonData = {
-        father: formData.father,
-        mother: formData.mother,
-        parentAnniversary: formData.parentAnniversary,
-        spouse: formData.spouse,
-        marriageAnniversary: formData.marriageAnniversary,
-        hasChildren: formData.hasChildren,
-        numberOfChildren: formData.numberOfChildren,
-        children: formData.children,
-        siblings: formData.siblings,
-        gender: formData.gender,
-        maritalStatus: formData.maritalStatus,
-      };
+      if (!userId) {
+        console.error("User ID is missing. Please login again.");
+        return;
+      }
   
-      formDataToSend.append("data", JSON.stringify(jsonData)); // ✅ Properly sending as JSON string
+      const familyMembers = [];
   
-      // ✅ Append images separately
-      formData.images.forEach((image) => {
-        if (image instanceof File) {
-          formDataToSend.append("images", image);
+      if (formData.father.name || formData.father.dob) {
+        familyMembers.push({
+          userId,
+          fullName: formData.father.name,
+          dob: formData.father.dob,
+          gender: "Male",
+          relationType: "Father",
+          eventType: "Birthday",
+        });
+      }
+  
+      if (formData.mother.name || formData.mother.dob) {
+        familyMembers.push({
+          userId,
+          fullName: formData.mother.name,
+          dob: formData.mother.dob,
+          gender: "Female",
+          relationType: "Mother",
+          eventType: "Birthday",
+        });
+      }
+  
+      if (formData.parentAnniversary.date) {
+        familyMembers.push({
+          userId,
+          fullName: "Parent Anniversary",
+          dob: formData.parentAnniversary.date,
+          relationType: "Parent Anniversary",
+          eventType: "Anniversary",
+        });
+      }
+  
+      if (formData.marriageAnniversary.date) {
+        familyMembers.push({
+          userId,
+          fullName: "Marriage Anniversary",
+          dob: formData.marriageAnniversary.date,
+          relationType: "Marriage Anniversary",
+          eventType: "Anniversary",
+        });
+      }
+  
+      if (formData.spouse.name || formData.spouse.dob) {
+        familyMembers.push({
+          userId,
+          fullName: formData.spouse.name,
+          dob: formData.spouse.dob,
+          gender: formData.gender === "Male" ? "Female" : "Male",
+          relationType: "Spouse",
+          eventType: "Birthday",
+        });
+      }
+  
+      // **Ensure children get images properly**
+      formData.children.forEach((child, index) => {
+        if (child.name && child.dob) {
+          familyMembers.push({
+            userId,
+            fullName: child.name,
+            dob: child.dob,
+            gender: child.gender,
+            relationType: "Child",
+            eventType: "Birthday",
+          });
+  
+          if (formData.images.childImages && formData.images.childImages[index]) {
+            formDataToSend.append("childImages", formData.images.childImages[index]);
+          }
         }
       });
   
-      console.log("Sending FormData:", Array.from(formDataToSend.entries())); // Debug
+      // **Ensure siblings get images properly**
+      formData.siblings.forEach((sibling, index) => {
+        if (sibling.name && sibling.dob) {
+          familyMembers.push({
+            userId,
+            fullName: sibling.name,
+            dob: sibling.dob,
+            gender: sibling.gender,
+            relationType: "Sibling",
+            eventType: "Birthday",
+          });
   
-      const response = await axios.post(
-        `${process.env.REACT_APP_BASE_URL}/family-info`,
-        formDataToSend,
-        {
-          headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
+          if (formData.images.siblingImages && formData.images.siblingImages[index]) {
+            formDataToSend.append("siblingImages", formData.images.siblingImages[index]);
+          }
         }
-      );
+      });
+  
+      const jsonData = {
+        familyMembers,
+        onboardingStatus: true,
+      };
+  
+      formDataToSend.append("data", JSON.stringify(jsonData));
+  
+      // **Append parent, spouse, and anniversary images correctly**
+      Object.keys(formData.images).forEach((key) => {
+        if (!key.includes("Images")) {
+          formDataToSend.append(key, formData.images[key]);
+        }
+      });
+  
+      console.log("FormData being sent:", formDataToSend);
+      for (let pair of formDataToSend.entries()) {
+        console.log(pair[0], pair[1]);
+      }
+  
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/family-info`, formDataToSend, {
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
+      });
   
       if (response.data.success) {
-        alert("Family information saved successfully!");
+        console.log("Family information saved successfully!");
+        localStorage.setItem("onboardingStatus", true);
         // navigate("/dashboard");
       } else {
-        alert(response.data.message);
+        console.error("Error saving family information:", response.data.message);
       }
     } catch (error) {
       console.error("Error saving family information:", error);
-      alert("Failed to save family information.");
     }
   };
   
-
-
-  // const handleSave = async () => {
-  //   try {
-  //     const response = await axios.post(
-  //       `${process.env.REACT_APP_BASE_URL}/family-info`,
-  //       formData,
-  //       {
-  //         headers: { Authorization: `Bearer ${token}` },
-  //       }
-  //     );
-
-  //     if (response.data.success) {
-  //       alert("Family information saved successfully!");
-  //       navigate("/dashboard"); // Redirect to the next page
-  //     } else {
-  //       alert(response.data.message);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error saving family information:", error);
-  //     alert("Failed to save family information.");
-  //   }
-  // };
+  // console.log(parentAnniversary,"44444444444444444444444444")
+// console.log(document.getElementById)
 
   return (
     <div className={styles.container}>
@@ -186,13 +239,7 @@ function AddInformation() {
           onChange={(e) => handleInputChange("dob", e.target.value, "father")}
         />
         <label>Image</label>
-        <input
-          type="file"
-          name="fatherImage"
-          accept="image/*"
-          onChange={(e) => handleImageChange(e.target.files[0])}
-        />
-
+        <input type="file" name="fatherImage" accept="image/*" onChange={(e) => handleImageChange(e, "fatherImage")} />
       </div>
 
       {/* Mother Information */}
@@ -213,13 +260,7 @@ function AddInformation() {
           onChange={(e) => handleInputChange("dob", e.target.value, "mother")}
         />
         <label>Image</label>
-        <input
-          type="file"
-          name="motherImage"
-          accept="image/*"
-          onChange={(e) => handleImageChange(e.target.files[0])}
-        />
-
+        <input type="file" name="motherImage" accept="image/*" onChange={(e) => handleImageChange(e, "motherImage")} />
       </div>
 
       {/* Parent Anniversary */}
@@ -232,13 +273,7 @@ function AddInformation() {
           onChange={(e) => handleInputChange("date", e.target.value, "parentAnniversary")}
         />
         <label>Image</label>
-        <input
-          type="file"
-          name="parentAnniversaryImage"
-          accept="image/*"
-          onChange={(e) => handleImageChange(e.target.files[0])}
-        />
-
+        <input type="file" name="parentAnniversaryImage" accept="image/*" onChange={(e) => handleImageChange(e, "parentAnniversaryImage")} />
       </div>
 
       {/* Spouse Section */}
@@ -261,14 +296,8 @@ function AddInformation() {
               onChange={(e) => handleInputChange("dob", e.target.value, "spouse")}
             />
             <label>Image</label>
-            <input
-              type="file"
-              name="spouseImage"
-              accept="image/*"
-              onChange={(e) => handleImageChange(e.target.files[0])}
-            />
-
-          </div>
+            <input type="file" name="spouseImage" accept="image/*" onChange={(e) => handleImageChange(e, "spouseImage")} />
+            </div>
 
           <div className={styles.section}>
             <h3>Marriage Anniversary</h3>
@@ -278,13 +307,7 @@ function AddInformation() {
               value={formData.marriageAnniversary.date}
               onChange={(e) => handleInputChange("date", e.target.value, "marriageAnniversary")}
             />
-            <label>Image</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => handleImageChange(e.target.files[0])}
-            />
-
+<input type="file" name="marriageAnniversaryImage" accept="image/*" onChange={(e) => handleImageChange(e, "marriageAnniversaryImage")} />
           </div>
 
           {/* Children Section */}
@@ -347,13 +370,8 @@ function AddInformation() {
                     onChange={(e) => handleInputChange("dob", e.target.value, "children", index)}
                   />
                   <label>Image</label>
-                  <input
-                    type="file"
-                    name="marriageAnniversaryImage"
-                    accept="image/*"
-                    onChange={(e) => handleImageChange(e.target.files[0])}
-                  />
-
+                
+<input type="file" name="childImages" accept="image/*" multiple onChange={(e) => handleImageChange(e, "childImages")} />
 
                   <label>Gender</label>
                   <select
@@ -417,11 +435,7 @@ function AddInformation() {
               <option value="Other">Other</option>
             </select>
             <label>Image</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => handleImageChange(e.target.files[0])}
-            />
+            <input type="file" name="siblingImages" accept="image/*" multiple onChange={(e) => handleImageChange(e, "siblingImages")} />
             <button
               onClick={() =>
                 setFormData({

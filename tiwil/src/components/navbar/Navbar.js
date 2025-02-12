@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode"; // Fixed import for jwtDecode
 import { CgProfile } from "react-icons/cg";
 import { HiMenu, HiX } from "react-icons/hi"; // Icons for hamburger and close
@@ -42,6 +42,7 @@ function Navbar() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("fullname");
+    localStorage.clear()
     setUser(null);
     setFullName("");
     setIsSidePanelOpen(false); // Close the side panel on logout
@@ -49,11 +50,11 @@ function Navbar() {
     window.dispatchEvent(new Event("storage"));
   };
 
-  const handleNavigateToProfile = () => {
-    setShowDropdown(false);
-    setIsSidePanelOpen(false); // Close side panel if open
-    navigate("/profile");
-  };
+  // const handleNavigateToProfile = () => {
+  //   setShowDropdown(false);
+  //   setIsSidePanelOpen(false); // Close side panel if open
+  //   navigate("/profile");
+  // };
 
   const handleAccountSetting = () => {
     navigate("/account-setting");
@@ -70,7 +71,7 @@ function Navbar() {
         className={styles.navLogo}
         src={`${process.env.PUBLIC_URL}/assets/TiwilLOGO 1.png`}
         alt="Tiwil Logo"
-        onClick={() => navigate("/home")}
+        onClick={() => navigate("/dashboard")}
       />
 
       {/* Desktop Buttons */}
@@ -81,13 +82,17 @@ function Navbar() {
               className={styles.profileInfo}
               onClick={() => setShowDropdown(!showDropdown)}
             >
+              <Link to="/notification">
+                <img src={`${process.env.PUBLIC_URL}/assets/Vector.png`} alt="Notification" />
+              </Link>
               <CgProfile className={styles.profileIcon} />
               <span className={styles.profileName}>{fullName}</span>
             </div>
             {showDropdown && (
               <div className={styles.dropdownMenu}>
-                <p onClick={handleNavigateToProfile}>Profile</p>
+                {/* <p onClick={handleNavigateToProfile}>Profile</p> */}
                 <p onClick={handleAccountSetting}>Account Setting</p>
+                <p onClick={()=>navigate("/dashboard")}>Dashboard</p>
                 <p onClick={handleLogout}>Logout</p>
               </div>
             )}
@@ -119,8 +124,11 @@ function Navbar() {
           <div className={styles.sidePanel}>
             {user ? (
               <>
-                <p onClick={handleNavigateToProfile}>Profile</p>
+                {/* <p onClick={handleNavigateToProfile}>Profile</p> */}
                 <p onClick={handleAccountSetting}>Account</p>
+                <p onClick={()=>navigate("/notification")}>Notifications</p>
+                <p onClick={()=>navigate("/dashboard")}>Dashboard</p>
+
                 <p onClick={handleLogout}>Logout</p>
               </>
             ) : (

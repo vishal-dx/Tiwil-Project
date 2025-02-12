@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Swal from "sweetalert2"; // Import SweetAlert2
 import styles from "../../styles/Auth.module.css";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
@@ -12,6 +13,7 @@ const SignIn = () => {
   const [otpGenerated, setOtpGenerated] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [message, setMessage] = useState("");
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -20,55 +22,45 @@ const SignIn = () => {
 
   // Handle Send OTP
   const handleSendOTP = async () => {
-    setMessage("Sending OTP...");
     try {
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/login/send-otp`, {
         phoneNumber: formData.phoneNumber,
       });
-
+  
       if (response.data.success) {
-        setOtpGenerated(response.data.otp); // Show OTP for demo
+        setOtpGenerated(response.data.otp);
         setIsOtpSent(true);
-        setMessage("OTP Sent Successfully!");
-      } else {
         setMessage(response.data.message);
+        Swal.fire({
+          icon: "success",
+          title: "OTP Sent Successfully!",
+          timer: 1000,  // Auto close in 3 seconds
+          showConfirmButton: false,
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: response.data.message,
+          timer: 3000,
+          showConfirmButton: false,
+        });
       }
     } catch (error) {
       console.error("Error sending OTP:", error);
-      setMessage(error.response?.data?.message || "Error sending OTP.");
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.response?.data?.message || "Error sending OTP.",
+        timer: 3000,
+        showConfirmButton: false,
+      });
     }
   };
+  
 
-  // // Handle Verify OTP
-  // const handleVerifyOTP = async () => {
-  //   setMessage("Verifying OTP...");
-  //   try {
-  //     const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/login/verify-otp`, {
-  //       phoneNumber: formData.phoneNumber,
-  //       otp: formData.otp,
-  //     });
-
-  //     if (response.data.success) {
-  //       setMessage("Login Successful!");
-
-  //       // Store user details in localStorage
-  //       localStorage.setItem("fullName", response.data.user.fullName);
-  //       localStorage.setItem("email", response.data.user.email);
-  //       localStorage.setItem("phoneNumber", response.data.user.phoneNumber);
-  //       localStorage.setItem("token", response.data.token);
-
-  //       navigate("/home"); // Redirect to home page
-  //     } else {
-  //       setMessage(response.data.message);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error verifying OTP:", error);
-  //     setMessage(error.response?.data?.message || "Error verifying OTP.");
-  //   }
-  // };
-
+  // Handle Verify OTP
   const handleVerifyOTP = async () => {
-    setMessage("Verifying OTP...");
     try {
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/login/verify-otp`, {
         phoneNumber: formData.phoneNumber,
@@ -76,25 +68,47 @@ const SignIn = () => {
       });
   
       if (response.data.success) {
-        setMessage("Login Successful!");
+        Swal.fire({
+          icon: "success",
+          title: "Login Successful!",
+          timer: 1000,
+          showConfirmButton: false,
+        });
   
-        // Check if `user` object exists in the response
-        const user = response.data.user || {};
-        localStorage.setItem("fullName", user.fullName || "");
-        localStorage.setItem("email", user.email || "");
-        localStorage.setItem("phoneNumber", user.phoneNumber || "");
         localStorage.setItem("token", response.data.token);
+        localStorage.setItem("userId", response.data.userId);
+        localStorage.setItem("profileStatus", JSON.stringify(response.data.profileStatus));
+        localStorage.setItem("onboardingStatus", JSON.stringify(response.data.onboardingStatus));
   
-        navigate("/home"); // Redirect to home page
+        if (!response.data.profileStatus) {
+          navigate("/profile");
+        } else if (!response.data.onboardingStatus) {
+          navigate("/add-information");
+        } else {
+          navigate("/dashboard");
+        }
       } else {
-        setMessage(response.data.message);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: response.data.message,
+          timer: 3000,
+          showConfirmButton: false,
+        });
       }
     } catch (error) {
       console.error("Error verifying OTP:", error);
-      setMessage(error.response?.data?.message || "Error verifying OTP.");
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.response?.data?.message || "Error verifying OTP.",
+        timer: 3000,
+        showConfirmButton: false,
+      });
     }
   };
   
+
 
   return (
     <div className={styles.authContainer}>
@@ -102,19 +116,13 @@ const SignIn = () => {
       <h1 className={styles.welcomeText}>Welcome</h1>
       <p className={styles.subText}>Connect with your friends today!</p>
       <div className={styles.tabContainer}>
-        <button
-          className={styles.tabButton}
-          onClick={() => navigate("/signup")} // Navigate to Sign Up
-        >
+        <button className={styles.tabButton} onClick={() => navigate("/signup")}>
           Sign Up
         </button>
-        <button
-          className={`${styles.tabButton} ${styles.activeTab}`} // Active state
-        >
+        <button className={`${styles.tabButton} ${styles.activeTab}`}>
           Sign In
         </button>
       </div>
-
 
       <input
         type="tel"
@@ -127,7 +135,9 @@ const SignIn = () => {
 
       {isOtpSent && (
         <>
-          <p className={styles.otpPopup}>Your OTP is: <strong>{otpGenerated}</strong></p>
+          <p className={styles.otpPopup}>
+            Your OTP is: <strong>{otpGenerated}</strong>
+          </p>
           <input
             type="text"
             name="otp"
@@ -148,10 +158,8 @@ const SignIn = () => {
           Verify OTP
         </button>
       )}
-
-<p>New on Tiwil <Link to="/signup">Signup</Link></p>
-
-      <p className={styles.message}>{message}</p>
+     <p>{message}</p> 
+      <p>New on Tiwil? <Link to="/signup">Signup</Link></p>
     </div>
   );
 };

@@ -21,67 +21,7 @@ const getProfile = async (req, res) => {
     }
 };
 
-// ✅ SAVE or UPDATE Profile & Family Info
-const saveProfileAndFamilyInfo = async (req, res) => {
-    try {
-        const userId = req.user.userId;
-
-        if (!userId) {
-            return res.status(400).json({ success: false, message: "User ID is required" });
-        }
-
-        let {
-            fullName, email, phoneNumber, gender, dob, location, maritalStatus, profileImage,
-            spouse, marriageAnniversary, father, mother, parentAnniversary, siblings, hasChildren, children
-        } = req.body;
-
-        // 🔹 Function to safely parse JSON if needed
-        const parseJSON = (data) => {
-            try { return typeof data === "string" ? JSON.parse(data) : data; } 
-            catch (error) { return null; } // Return null for invalid JSON
-        };
-
-        // ✅ Ensure all objects are properly formatted before saving
-        father = parseJSON(father) || {};
-        mother = parseJSON(mother) || {};
-        spouse = parseJSON(spouse) || {};
-        marriageAnniversary = parseJSON(marriageAnniversary) || {};
-        parentAnniversary = parseJSON(parentAnniversary) || {};
-        siblings = parseJSON(siblings) || [];
-        children = parseJSON(children) || [];
-
-        let profile = await Profile.findOne({ userId });
-
-        if (profile) {
-            profile = await Profile.findOneAndUpdate(
-                { userId },
-                { 
-                    fullName, email, phoneNumber, gender, dob, location, maritalStatus, profileImage,
-                    spouse, marriageAnniversary, father, mother, parentAnniversary, hasChildren, siblings, children
-                },
-                { new: true, runValidators: true }
-            );
-
-            return res.status(200).json({ success: true, message: "Profile updated successfully.", data: profile });
-        }
-
-        const newProfile = new Profile({
-            userId, fullName, email, phoneNumber, gender, dob, location, maritalStatus, profileImage,
-            spouse, marriageAnniversary, father, mother, parentAnniversary, hasChildren, siblings, children
-        });
-
-        await newProfile.save();
-
-        res.status(201).json({ success: true, message: "Profile and family information saved successfully.", data: newProfile });
-
-    } catch (error) {
-        console.error("Error saving profile and family info:", error);
-        res.status(500).json({ success: false, message: "Failed to save profile and family information." });
-    }
-};
-
-  
-  
+ 
 const uploadProfileImage = (req, res) => {
     if (!req.file) {
       return res.status(400).json({ success: false, message: "No file uploaded" });
@@ -131,70 +71,72 @@ const uploadProfileImage = (req, res) => {
 };
 
 const saveUserProfile = async (req, res) => {
-    try {
-      const userId = req.user.userId;
-  
-      console.log("Request Body:", req.body);
-      console.log("Uploaded File:", req.file);
-  
-      let { fullName, email, phoneNumber, gender, dob, location, maritalStatus } = req.body;
-  
-      // Convert `dob` from string to Date
-      if (dob) {
-        dob = new Date(dob);
-        if (isNaN(dob)) {
-          return res.status(400).json({ success: false, message: "Invalid date format." });
-        }
+  try {
+    const userId = req.user.userId;
+
+    console.log("Request Body:", req.body);
+    console.log("Uploaded File:", req.file);
+
+    let { fullName, email, phoneNumber, gender, dob, location, maritalStatus } = req.body;
+
+    // Convert `dob` from string to Date
+    if (dob) {
+      dob = new Date(dob);
+      if (isNaN(dob)) {
+        return res.status(400).json({ success: false, message: "Invalid date format." });
       }
-  
-      // Handle profile image if uploaded
-      let profileImage = req.file ? `/profileImages/${req.file.filename}` : req.body.profileImage;
-  
-      if (!fullName || !email || !phoneNumber || !gender || !dob || !location || !maritalStatus) {
-        return res.status(400).json({ success: false, message: "All required fields must be provided." });
-      }
-  
-      let userProfile = await UserProfile.findOne({ userId });
-  
-      if (userProfile) {
-        // ✅ Update existing profile
-        userProfile.fullName = fullName;
-        userProfile.email = email;
-        userProfile.phoneNumber = phoneNumber;
-        userProfile.gender = gender;
-        userProfile.dob = dob;
-        userProfile.location = location;
-        userProfile.maritalStatus = maritalStatus;
-        if (profileImage) {
-          userProfile.profileImage = profileImage;
-        }
-  
-        await userProfile.save();
-        return res.status(200).json({ success: true, message: "Profile updated successfully.", data: userProfile });
-      }
-  
-      // ✅ If user profile does not exist, create a new one
-      const newUserProfile = new UserProfile({
-        userId,
-        fullName,
-        email,
-        phoneNumber,
-        gender,
-        dob,
-        location,
-        maritalStatus,
-        profileImage,
-      });
-  
-      await newUserProfile.save();
-      res.status(201).json({ success: true, message: "Profile saved successfully.", data: newUserProfile });
-  
-    } catch (error) {
-      console.error("Error saving user profile:", error);
-      res.status(500).json({ success: false, message: "Failed to save user profile." });
     }
-  };
+
+    // Handle profile image if uploaded
+    let profileImage = req.file ? `/profileImages/${req.file.filename}` : req.body.profileImage;
+
+    if (!fullName || !email || !phoneNumber || !gender || !dob || !location || !maritalStatus) {
+      return res.status(400).json({ success: false, message: "All required fields must be provided." });
+    }
+
+    let userProfile = await UserProfile.findOne({ userId });
+
+    if (userProfile) {
+      // ✅ Update existing profile
+      userProfile.fullName = fullName;
+      userProfile.email = email;
+      userProfile.phoneNumber = phoneNumber;
+      userProfile.gender = gender;
+      userProfile.dob = dob;
+      userProfile.location = location;
+      userProfile.maritalStatus = maritalStatus;
+      userProfile.profileStatus = true; // ✅ Mark profile as complete
+      if (profileImage) {
+        userProfile.profileImage = profileImage;
+      }
+
+      await userProfile.save();
+      return res.status(200).json({ success: true, message: "Profile updated successfully.", data: userProfile });
+    }
+
+    // ✅ If user profile does not exist, create a new one
+    const newUserProfile = new UserProfile({
+      userId,
+      fullName,
+      email,
+      phoneNumber,
+      gender,
+      dob,
+      location,
+      maritalStatus,
+      profileImage,
+      profileStatus: true, // ✅ Mark profile as complete
+    });
+
+    await newUserProfile.save();
+    res.status(201).json({ success: true, message: "Profile saved successfully.", data: newUserProfile });
+  } catch (error) {
+    console.error("Error saving user profile:", error);
+    res.status(500).json({ success: false, message: "Failed to save user profile." });
+  }
+};
+
   
 
 
-module.exports = { getProfile, saveProfileAndFamilyInfo, uploadProfileImage,getUserProfile,saveUserProfile };
+module.exports = { getProfile,  uploadProfileImage,getUserProfile,saveUserProfile };

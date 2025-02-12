@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2"; // Import SweetAlert2
 import styles from "../styles/AddInfomation.module.css"; // Reusing AddInformation styles
 import axios from "axios";
 import { IoMdCamera } from "react-icons/io";
@@ -9,7 +10,7 @@ function Profile() {
 
   const [userData, setUserData] = useState({
     fullName: localStorage.getItem("fullName") || "",
-    email:  "",
+    email: "",
     phoneNumber: localStorage.getItem("phoneNumber") || "",
     gender: "",
     dob: "",
@@ -19,6 +20,7 @@ function Profile() {
   });
 
   const [selectedProfileImage, setSelectedProfileImage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -33,6 +35,7 @@ function Profile() {
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
+        setErrorMessage("Failed to fetch user data.");
       }
     };
 
@@ -47,33 +50,34 @@ function Profile() {
   };
 
   const handleSave = async () => {
-    const token = localStorage.getItem("token");
+    setErrorMessage(""); // Reset error message before validation
 
     if (!userData.fullName.trim()) {
-      alert("Full Name is required.");
+      setErrorMessage("Full Name is required.");
       return;
     }
 
     if (!userData.dob) {
-      alert("Please enter your Date of Birth.");
+      setErrorMessage("Please enter your Date of Birth.");
       return;
     }
 
     if (!userData.location.trim()) {
-      alert("Please enter your Location.");
+      setErrorMessage("Please enter your Location.");
       return;
     }
 
     if (!userData.gender) {
-      alert("Please select your gender.");
+      setErrorMessage("Please select your gender.");
       return;
     }
 
     if (!userData.maritalStatus) {
-      alert("Please select your Marital Status.");
+      setErrorMessage("Please select your Marital Status.");
       return;
     }
 
+    const token = localStorage.getItem("token");
     const formData = new FormData();
     Object.keys(userData).forEach((key) => {
       formData.append(key, userData[key]);
@@ -92,14 +96,14 @@ function Profile() {
       });
 
       if (response.data.success) {
-        alert("Profile saved successfully!");
+        localStorage.setItem("profileStatus", true);
         navigate("/add-information");
       } else {
-        alert(response.data.message);
+        setErrorMessage(response.data.message);
       }
     } catch (error) {
       console.error("Error updating profile:", error);
-      alert("Failed to update profile.");
+      setErrorMessage("Failed to update profile.");
     }
   };
 
@@ -108,24 +112,24 @@ function Profile() {
       <h2>Profile Setup</h2>
 
       <div className={styles.profileSection}>
-             <div className={styles.profileImageWrapper}>
-               <img
-                 src={
-                  selectedProfileImage
-                     ? URL.createObjectURL(selectedProfileImage)
-                     : userData.profileImage
-                     ? `${process.env.REACT_APP_BASE_URL}${userData.profileImage}`
-                     : `${process.env.PUBLIC_URL}/assets/ProfilDefaulticon.png`
-                 }
-                 alt="Profile"
-                 className={styles.profileImage}
-               />
-               <label className={styles.cameraIcon}>
-                 <IoMdCamera size={20} />
-                 <input type="file" style={{ display: "none" }} onChange={handleProfileImageChange} />
-               </label>
-             </div>
-           </div>
+        <div className={styles.profileImageWrapper}>
+          <img
+            src={
+              selectedProfileImage
+                ? URL.createObjectURL(selectedProfileImage)
+                : userData.profileImage
+                ? `${process.env.REACT_APP_BASE_URL}${userData.profileImage}`
+                : `${process.env.PUBLIC_URL}/assets/ProfilDefaulticon.png`
+            }
+            alt="Profile"
+            className={styles.profileImage}
+          />
+          <label className={styles.cameraIcon}>
+            <IoMdCamera size={20} />
+            <input type="file" style={{ display: "none" }} onChange={handleProfileImageChange} />
+          </label>
+        </div>
+      </div>
 
       <div className={styles.form}>
         <div className={styles.formGroup}>
@@ -139,10 +143,11 @@ function Profile() {
 
         <div className={styles.formGroup}>
           <label>Email</label>
-          <input type="email" 
-          value={userData.email}
-          onChange={(e) => setUserData({ ...userData, email: e.target.value })}
-            />
+          <input
+            type="email"
+            value={userData.email}
+            onChange={(e) => setUserData({ ...userData, email: e.target.value })}
+          />
         </div>
 
         <div className={styles.formGroup}>
@@ -193,10 +198,10 @@ function Profile() {
           </select>
         </div>
       </div>
-    <div className={styles.saveBtnBox}>
-      <button className={styles.saveButton} onClick={handleSave}>
-        Save & Proceed
-      </button>
+      <div className={styles.saveBtnBox}>
+        <button className={styles.saveButton} onClick={handleSave}>
+          Save & Proceed
+        </button>
       </div>
     </div>
   );

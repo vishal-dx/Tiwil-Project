@@ -7,6 +7,7 @@ import styles from "../styles/Account.module.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import EditableProfile from "./EditableProfile";
+import Footer from "../components/footer/Footer";
 
 const Account = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -163,6 +164,7 @@ const Account = () => {
           </div>
         </div>
       )}
+    <Footer/>
     </div>
   );
 };

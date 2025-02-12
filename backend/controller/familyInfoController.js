@@ -1,5 +1,8 @@
 const FamilyInfo = require("../models/FamilyInfo");
 const Event = require("../models/EventSchema");
+const multer = require("multer");
+const path = require("path");
+const { default: mongoose } = require("mongoose");
 
 // Fetch Family Information
 const getFamilyInfo = async (req, res) => {
@@ -15,71 +18,6 @@ const getFamilyInfo = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to fetch family information." });
   }
 };
-
-// Save or Update Family Information
-// const saveFamilyInfo = async (req, res) => {
-//   try {
-//     const userId = req.user.userId;
-//     const {
-//       father,
-//       mother,
-//       parentAnniversary,
-//       spouse,
-//       marriageAnniversary,
-//       hasChildren,
-//       numberOfChildren,
-//       children,
-//       siblings,
-//     } = req.body;
-
-//     let familyInfo = await FamilyInfo.findOne({ userId });
-
-//     if (familyInfo) {
-//       // Update existing family information
-//       familyInfo.father = father || familyInfo.father;
-//       familyInfo.mother = mother || familyInfo.mother;
-//       familyInfo.parentAnniversary = parentAnniversary || familyInfo.parentAnniversary;
-//       familyInfo.spouse = spouse || familyInfo.spouse;
-//       familyInfo.marriageAnniversary = marriageAnniversary || familyInfo.marriageAnniversary;
-//       familyInfo.hasChildren = hasChildren || familyInfo.hasChildren;
-//       familyInfo.numberOfChildren = numberOfChildren || familyInfo.numberOfChildren;
-//       familyInfo.children = children || familyInfo.children;
-//       familyInfo.siblings = siblings || familyInfo.siblings;
-
-//       await familyInfo.save();
-//       return res.status(200).json({ success: true, message: "Family information updated successfully.", data: familyInfo });
-//     }
-
-//     // Create new family information
-//     familyInfo = new FamilyInfo({
-//       userId,
-//       father,
-//       mother,
-//       parentAnniversary,
-//       spouse,
-//       marriageAnniversary,
-//       hasChildren,
-//       numberOfChildren,
-//       children,
-//       siblings,
-//     });
-
-//     await familyInfo.save();
- 
-//     res.status(201).json({ success: true, message: "Family information saved successfully.", data: familyInfo });
-//   } catch (error) {
-//     console.error("Error saving family info:", error);
-//     res.status(500).json({ success: false, message: "Failed to save family information." });
-//   }
-// };
-
-
-
-
-// const FamilyInfo = require("../models/FamilyInfo");
-// const Event = require("../models/EventSchema");
-const multer = require("multer");
-const path = require("path");
 
 
 const storage = multer.diskStorage({
@@ -104,22 +42,358 @@ const fileFilter = (req, file, cb) => {
 const familyUpload = multer({
   storage,
   fileFilter,
-}).array("images", 20);
-// Configure multer for file upload
-const calculateDaysLeft = (date) => {
-  const today = new Date();
-  const eventDate = new Date(date);
-  const diffTime = eventDate - today;
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-};
+}).fields([
+  { name: "fatherImage", maxCount: 1 },
+  { name: "motherImage", maxCount: 1 },
+  { name: "spouseImage", maxCount: 1 },
+  { name: "parentAnniversaryImage", maxCount: 1 },
+  { name: "marriageAnniversaryImage", maxCount: 1 },
+  { name: "childImages", maxCount: 10 }, // Allow multiple child images
+  { name: "siblingImages", maxCount: 10 }, // Allow multiple sibling images
+]);
 
-// Save or Update Family Information and Events
+// const saveFamilyInfo = async (req, res) => {
+//   try {
+//     const userId = req.user?.userId;
+//     if (!userId) {
+//       return res.status(401).json({ success: false, message: "User authentication failed. Please log in again." });
+//     }
+//     console.log(req.body,'46825663488')
+
+//     let data;
+//     try {
+//       data = req.body.data ? JSON.parse(req.body.data) : {};
+//     } catch (error) {
+//       console.error("JSON Parsing Error:", error);
+//       return res.status(400).json({ success: false, message: "Invalid JSON format in request body." });
+//     }
+
+//     const files = req.files || {}; // ✅ Extract files correctly
+//     console.log("Uploaded Files:", files);
+
+//     // Function to extract file paths safely
+//     const getImagePath = (fieldName) => {
+//       return req.files[fieldName] && req.files[fieldName][0]
+//         ? req.files[fieldName][0].path.replace(/\\/g, "/")
+//         : null;
+//     };
+    
+    
+
+//     let { familyMembers = [], parentAnniversary, marriageAnniversary, spouse, siblings = [], children = [], onboardingStatus } = data;
+
+//     if (!Array.isArray(familyMembers)) {
+//       return res.status(400).json({ success: false, message: "familyMembers must be an array." });
+//     }
+
+//     // **Assign Images to Family Members**
+//     familyMembers = familyMembers.map((member, index) => {
+//       let image = null;
+    
+//       if (member.relationType === "Father") image = getImagePath("fatherImage");
+//       if (member.relationType === "Mother") image = getImagePath("motherImage");
+//       if (member.relationType === "Spouse") image = getImagePath("spouseImage");
+//       if (member.relationType === "Parent Anniversary") image = getImagePath("parentAnniversaryImage");
+//       if (member.relationType === "Marriage Anniversary") image = getImagePath("marriageAnniversaryImage");
+    
+//       // ✅ Corrected child and sibling image assignment
+//       if (member.relationType === "Child") {
+//         image = getImagePath(`childImage${index}`);
+//       }
+//       if (member.relationType === "Sibling") {
+//         image = getImagePath(`siblingImage${index}`);
+//       }
+    
+//       return {
+//         ...member,
+//         userId,
+//         image,
+//         relationId: member.relationId || new mongoose.Types.ObjectId(),
+//         eventId: member.eventId || new mongoose.Types.ObjectId(),
+//       };
+//     });
+    
+
+//     console.log("Final Family Members Data with Image Paths:", JSON.stringify(familyMembers, null, 2));
+
+//     let familyInfo = await FamilyInfo.findOne({ userId });
+
+//     if (familyInfo) {
+//       familyInfo.set({ familyMembers, onboardingStatus });
+//       await familyInfo.save();
+//       console.log("Updated Family Info:", familyInfo);
+//     } else {
+//       familyInfo = new FamilyInfo({ userId, familyMembers, onboardingStatus });
+//       await familyInfo.save();
+//       console.log("Saved New Family Info:", familyInfo);
+//     }
+//     for (const member of familyMembers) {
+//       await Event.create({
+//         userId,
+//         eventId: new mongoose.Types.ObjectId(),
+//         name: `${member.fullName}'s ${member.eventType}`,
+//         date: member.dob,
+//         relation: member.relationType,
+//         eventType: member.eventType,
+//         image: member.image || null,
+//       });
+//     }
+//     res.status(201).json({
+//       success: true,
+//       message: "Family information saved successfully.",
+//       data: familyInfo,
+//     });
+//   } catch (error) {
+//     console.error("Error saving family info:", error);
+//     res.status(500).json({ success: false, message: "Failed to save family information." });
+//   }
+// };
+
+// const saveFamilyInfo = async (req, res) => {
+//   try {
+//     const userId = req.user?.userId;
+//     if (!userId) {
+//       return res.status(401).json({ success: false, message: "User authentication failed. Please log in again." });
+//     }
+
+//     console.log("Received Request Body:", req.body);
+//     console.log("Uploaded Files:", req.files);
+
+//     let data;
+//     try {
+//       data = req.body.data ? JSON.parse(req.body.data) : {};
+//     } catch (error) {
+//       console.error("JSON Parsing Error:", error);
+//       return res.status(400).json({ success: false, message: "Invalid JSON format in request body." });
+//     }
+
+//     const files = req.files || {};
+
+//     // **Function to extract file paths safely**
+//     const getImagePath = (fieldName, index = null) => {
+//       if (index !== null) {
+//         return files[fieldName] && files[fieldName][index]
+//           ? files[fieldName][index].path.replace(/\\/g, "/")
+//           : null;
+//       }
+//       return files[fieldName] && files[fieldName][0]
+//         ? files[fieldName][0].path.replace(/\\/g, "/")
+//         : null;
+//     };
+
+//     let { familyMembers = [], onboardingStatus } = data;
+
+//     if (!Array.isArray(familyMembers)) {
+//       return res.status(400).json({ success: false, message: "familyMembers must be an array." });
+//     }
+
+//     // **Extract Child and Sibling Images as Arrays**
+//     const childImages = files.childImages ? files.childImages.map((file) => file.path.replace(/\\/g, "/")) : [];
+//     const siblingImages = files.siblingImages ? files.siblingImages.map((file) => file.path.replace(/\\/g, "/")) : [];
+
+//     console.log("Extracted Child Images:", childImages);
+//     console.log("Extracted Sibling Images:", siblingImages);
+
+//     let childIndex = 0;
+//     let siblingIndex = 0;
+
+//     // **Ensure Each Child Gets an Image in Order**
+//     familyMembers = familyMembers.map((member) => {
+//       let image = null;
+
+//       if (member.relationType === "Father") image = getImagePath("fatherImage");
+//       if (member.relationType === "Mother") image = getImagePath("motherImage");
+//       if (member.relationType === "Spouse") image = getImagePath("spouseImage");
+//       if (member.relationType === "Parent Anniversary") image = getImagePath("parentAnniversaryImage");
+//       if (member.relationType === "Marriage Anniversary") image = getImagePath("marriageAnniversaryImage");
+
+//       // **Assign Child Images in Order**
+//       if (member.relationType === "Child") {
+//         if (childIndex < childImages.length) {
+//           image = childImages[childIndex];
+//         }
+//         childIndex++; // Move to the next available child image
+//       }
+
+//       // **Assign Sibling Images in Order**
+//       if (member.relationType === "Sibling") {
+//         if (siblingIndex < siblingImages.length) {
+//           image = siblingImages[siblingIndex];
+//         }
+//         siblingIndex++;
+//       }
+
+//       return {
+//         ...member,
+//         userId,
+//         image,
+//         relationId: member.relationId || new mongoose.Types.ObjectId(),
+//         eventId: member.eventId || new mongoose.Types.ObjectId(),
+//       };
+//     });
+
+//     console.log("Final Family Members Data with Image Paths:", JSON.stringify(familyMembers, null, 2));
+
+//     let familyInfo = await FamilyInfo.findOne({ userId });
+
+//     if (familyInfo) {
+//       familyInfo.set({ familyMembers, onboardingStatus });
+//       await familyInfo.save();
+//       console.log("Updated Family Info:", familyInfo);
+//     } else {
+//       familyInfo = new FamilyInfo({ userId, familyMembers, onboardingStatus });
+//       await familyInfo.save();
+//       console.log("Saved New Family Info:", familyInfo);
+//     }
+
+//     // **Create Events for Each Family Member**
+//     for (const member of familyMembers) {
+//       await Event.create({
+//         userId,
+//         eventId: new mongoose.Types.ObjectId(),
+//         name: `${member.fullName}'s ${member.eventType}`,
+//         date: member.dob,
+//         relation: member.relationType,
+//         eventType: member.eventType,
+//         image: member.image || null,
+//       });
+//     }
+
+//     res.status(201).json({
+//       success: true,
+//       message: "Family information saved successfully.",
+//       data: familyInfo,
+//     });
+//   } catch (error) {
+//     console.error("Error saving family info:", error);
+//     res.status(500).json({ success: false, message: "Failed to save family information." });
+//   }
+// };
+
+
+//latest code
+// const saveFamilyInfo = async (req, res) => {
+//   try {
+//     const userId = req.user?.userId;
+//     if (!userId) {
+//       return res.status(401).json({ success: false, message: "User authentication failed. Please log in again." });
+//     }
+
+//     console.log("Received Request Body:", req.body);
+//     console.log("Uploaded Files:", req.files);
+
+//     let data;
+//     try {
+//       data = req.body.data ? JSON.parse(req.body.data) : {};
+//     } catch (error) {
+//       console.error("JSON Parsing Error:", error);
+//       return res.status(400).json({ success: false, message: "Invalid JSON format in request body." });
+//     }
+
+//     const files = req.files || {};
+
+//     // Function to extract file paths safely
+//     const getImagePath = (fieldName) => {
+//       return files[fieldName] && files[fieldName][0] ? files[fieldName][0].path.replace(/\\/g, "/") : null;
+//     };
+
+//     let { familyMembers = [], onboardingStatus } = data;
+
+//     if (!Array.isArray(familyMembers)) {
+//       return res.status(400).json({ success: false, message: "familyMembers must be an array." });
+//     }
+
+//     // Extract Child and Sibling Images
+//     const childImages = files.childImages ? files.childImages.map((file) => file.path.replace(/\\/g, "/")) : [];
+//     const siblingImages = files.siblingImages ? files.siblingImages.map((file) => file.path.replace(/\\/g, "/")) : [];
+
+//     console.log("Extracted Child Images:", childImages);
+//     console.log("Extracted Sibling Images:", siblingImages);
+
+//     let childIndex = 0;
+//     let siblingIndex = 0;
+
+//     // Ensure Each Member Gets Correct Data
+//     familyMembers = familyMembers.map((member) => {
+//       let image = null;
+
+//       if (member.relationType === "Father") image = getImagePath("fatherImage");
+//       if (member.relationType === "Mother") image = getImagePath("motherImage");
+//       if (member.relationType === "Spouse") image = getImagePath("spouseImage");
+//       if (member.relationType === "Parent Anniversary") image = getImagePath("parentAnniversaryImage");
+//       if (member.relationType === "Marriage Anniversary") image = getImagePath("marriageAnniversaryImage");
+
+//       // Assign Child Images in Order
+//       if (member.relationType === "Child" && childIndex < childImages.length) {
+//         image = childImages[childIndex];
+//         childIndex++;
+//       }
+
+//       // Assign Sibling Images in Order
+//       if (member.relationType === "Sibling" && siblingIndex < siblingImages.length) {
+//         image = siblingImages[siblingIndex];
+//         siblingIndex++;
+//       }
+
+//       return {
+//         ...member,
+//         userId,
+//         dob: member.eventType === "Birthday" ? member.dob : null, // Store DOB only for Birthdays
+//         anniversaryDate: member.eventType === "Anniversary" ? member.anniversaryDate || member.dob : null, // Fix missing anniversaryDate
+//         image,
+//         relationId: member.relationId || new mongoose.Types.ObjectId(),
+//         eventId: member.eventId || new mongoose.Types.ObjectId(),
+//       };
+//     });
+
+//     console.log("Final Family Members Data with Image Paths:", JSON.stringify(familyMembers, null, 2));
+
+//     let familyInfo = await FamilyInfo.findOne({ userId });
+
+//     if (familyInfo) {
+//       familyInfo.set({ familyMembers, onboardingStatus });
+//       await familyInfo.save();
+//       console.log("Updated Family Info:", familyInfo);
+//     } else {
+//       familyInfo = new FamilyInfo({ userId, familyMembers, onboardingStatus });
+//       await familyInfo.save();
+//       console.log("Saved New Family Info:", familyInfo);
+//     }
+
+//     // Create Events for Each Family Member
+//     for (const member of familyMembers) {
+//       await Event.create({
+//         userId,
+//         eventId: new mongoose.Types.ObjectId(),
+//         name: `${member.fullName}'s ${member.eventType}`,
+//         date: member.eventType === "Birthday" ? member.dob : member.anniversaryDate, // Use correct date
+//         relation: member.relationType,
+//         eventType: member.eventType,
+//         image: member.image || null,
+//       });
+//     }
+
+//     res.status(201).json({
+//       success: true,
+//       message: "Family information saved successfully.",
+//       data: familyInfo,
+//     });
+//   } catch (error) {
+//     console.error("Error saving family info:", error);
+//     res.status(500).json({ success: false, message: "Failed to save family information." });
+//   }
+// };
+
 const saveFamilyInfo = async (req, res) => {
   try {
-    const userId = req.user.userId;
-    console.log(req.body, "//////////////////////////////////////////..");
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "User authentication failed. Please log in again." });
+    }
 
-    // Ensure `req.body.data` is properly parsed
+    console.log("Received Request Body:", req.body);
+    console.log("Uploaded Files:", req.files);
+
     let data;
     try {
       data = req.body.data ? JSON.parse(req.body.data) : {};
@@ -128,94 +402,91 @@ const saveFamilyInfo = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid JSON format in request body." });
     }
 
-    const files = req.files || [];
-    console.log("Received Data:", JSON.stringify(data, null, 2));
-    console.log("Uploaded Files:", files);
+    const files = req.files || {};
 
-    let {
-      father = {},
-      mother = {},
-      parentAnniversary = {},
-      spouse = {},
-      marriageAnniversary = {},
-      hasChildren = false,
-      numberOfChildren = 0,
-      children = [],
-      siblings = [],
-    } = data;
+    // Function to extract file paths safely
+    const getImagePath = (fieldName) => {
+      return files[fieldName] && files[fieldName][0] ? files[fieldName][0].path.replace(/\\/g, "/") : null;
+    };
 
-    // ✅ Function to format paths properly (Windows -> URL-friendly)
-    const formatPath = (filePath) => (filePath ? filePath.replace(/\\/g, "/") : null);
+    let { familyMembers = [], onboardingStatus } = data;
 
-    // **Attach images dynamically**
-    if (files.length > 0) {
-      if (files[0]) father.image = formatPath(files[0].path);
-      if (files[1]) mother.image = formatPath(files[1].path);
-      if (files[2]) parentAnniversary.image = formatPath(files[2].path);
-      if (files[3]) spouse.image = formatPath(files[3].path);
-      if (files[4]) marriageAnniversary.image = formatPath(files[4].path);
-
-      children = children.map((child, index) => ({
-        ...child,
-        image: formatPath(files[5 + index]?.path),
-      }));
-
-      siblings = siblings.map((sibling, index) => ({
-        ...sibling,
-        image: formatPath(files[5 + children.length + index]?.path),
-      }));
+    if (!Array.isArray(familyMembers)) {
+      return res.status(400).json({ success: false, message: "familyMembers must be an array." });
     }
+
+    // Extract Child and Sibling Images
+    const childImages = files.childImages ? files.childImages.map((file) => file.path.replace(/\\/g, "/")) : [];
+    const siblingImages = files.siblingImages ? files.siblingImages.map((file) => file.path.replace(/\\/g, "/")) : [];
+
+    console.log("Extracted Child Images:", childImages);
+    console.log("Extracted Sibling Images:", siblingImages);
+
+    let childIndex = 0;
+    let siblingIndex = 0;
+
+    // Ensure Each Member Gets Correct Data
+    familyMembers = familyMembers.map((member) => {
+      let image = null;
+
+      if (member.relationType === "Father") image = getImagePath("fatherImage");
+      if (member.relationType === "Mother") image = getImagePath("motherImage");
+      if (member.relationType === "Spouse") image = getImagePath("spouseImage");
+      if (member.relationType === "Parent Anniversary") image = getImagePath("parentAnniversaryImage");
+      if (member.relationType === "Marriage Anniversary") image = getImagePath("marriageAnniversaryImage");
+
+      // Assign Child Images in Order
+      if (member.relationType === "Child" && childIndex < childImages.length) {
+        image = childImages[childIndex];
+        childIndex++;
+      }
+
+      // Assign Sibling Images in Order
+      if (member.relationType === "Sibling" && siblingIndex < siblingImages.length) {
+        image = siblingImages[siblingIndex];
+        siblingIndex++;
+      }
+
+      // ✅ Generate a single eventId to be used in both schemas
+      const eventId = new mongoose.Types.ObjectId();
+
+      return {
+        ...member,
+        userId,
+        dob: member.eventType === "Birthday" ? member.dob : null,
+        anniversaryDate: member.eventType === "Anniversary" ? member.anniversaryDate || member.dob : null,
+        image,
+        relationId: member.relationId || new mongoose.Types.ObjectId(),
+        eventId, // Use this eventId for both FamilyInfo and Event schemas
+      };
+    });
+
+    console.log("Final Family Members Data with Image Paths:", JSON.stringify(familyMembers, null, 2));
 
     let familyInfo = await FamilyInfo.findOne({ userId });
 
     if (familyInfo) {
-      // ✅ Use Mongoose `set()` to ensure fields are properly updated
-      familyInfo.set({
-        father: { ...familyInfo.father, ...father },
-        mother: { ...familyInfo.mother, ...mother },
-        parentAnniversary: { ...familyInfo.parentAnniversary, ...parentAnniversary },
-        spouse: { ...familyInfo.spouse, ...spouse },
-        marriageAnniversary: { ...familyInfo.marriageAnniversary, ...marriageAnniversary },
-        hasChildren,
-        numberOfChildren,
-        children: children.length > 0 ? children : familyInfo.children,
-        siblings: siblings.length > 0 ? siblings : familyInfo.siblings,
-      });
-
+      familyInfo.set({ familyMembers, onboardingStatus });
       await familyInfo.save();
-
-      // ✅ Generate and store event data for this user
-      await generateEvents(userId, familyInfo);
-
-      console.log("Updated Family Info:", JSON.stringify(familyInfo, null, 2));
-
-      return res.status(200).json({
-        success: true,
-        message: "Family information updated successfully.",
-        data: familyInfo,
-      });
+      console.log("Updated Family Info:", familyInfo);
+    } else {
+      familyInfo = new FamilyInfo({ userId, familyMembers, onboardingStatus });
+      await familyInfo.save();
+      console.log("Saved New Family Info:", familyInfo);
     }
 
-    // ✅ If no existing record, create a new one
-    familyInfo = new FamilyInfo({
-      userId,
-      father,
-      mother,
-      parentAnniversary,
-      spouse,
-      marriageAnniversary,
-      hasChildren,
-      numberOfChildren,
-      children,
-      siblings,
-    });
-
-    await familyInfo.save();
-
-    // ✅ Generate and store event data
-    await generateEvents(userId, familyInfo);
-
-    console.log("Saved New Family Info:", JSON.stringify(familyInfo, null, 2));
+    // Create Events for Each Family Member using the same eventId
+    for (const member of familyMembers) {
+      await Event.create({
+        userId,
+        eventId: member.eventId, // ✅ Use the same eventId from FamilyInfo schema
+        name: `${member.fullName}'s ${member.eventType}`,
+        date: member.eventType === "Birthday" ? member.dob : member.anniversaryDate,
+        relation: member.relationType,
+        eventType: member.eventType,
+        image: member.image || null,
+      });
+    }
 
     res.status(201).json({
       success: true,
@@ -227,190 +498,210 @@ const saveFamilyInfo = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to save family information." });
   }
 };
-  
 
 
-
-
-// Function to generate events
-const generateEvents = async (userId, familyInfo) => {
-  const events = [];
-
-  // Function to calculate remaining days
-  const calculateDaysLeft = (date) => {
-    const today = new Date();
-    const eventDate = new Date(date);
-    const diffTime = eventDate - today;
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  };
-
-  // Add father and mother birthdays
-  if (familyInfo.father?.dob) {
-    events.push({
-      userId,
-      name: `${familyInfo.father.name}'s Birthday`,
-      date: familyInfo.father.dob,
-      relation: "Father",
-      daysLeft: calculateDaysLeft(familyInfo.father.dob),
-      image: familyInfo.father.image,
-    });
-  }
-
-  if (familyInfo.mother?.dob) {
-    events.push({
-      userId,
-      name: `${familyInfo.mother.name}'s Birthday`,
-      date: familyInfo.mother.dob,
-      relation: "Mother",
-      daysLeft: calculateDaysLeft(familyInfo.mother.dob),
-      image: familyInfo.mother.image,
-    });
-  }
-
-  // Add parent's anniversary
-  if (familyInfo.parentAnniversary?.date) {
-    events.push({
-      userId,
-      name: "Parent's Anniversary",
-      date: familyInfo.parentAnniversary.date,
-      relation: "Parent Anniversary",
-      daysLeft: calculateDaysLeft(familyInfo.parentAnniversary.date),
-      image: familyInfo.parentAnniversary.image,
-    });
-  }
-
-  // Add spouse events
-  if (familyInfo.spouse?.dob) {
-    events.push({
-      userId,
-      name: `${familyInfo.spouse.name}'s Birthday`,
-      date: familyInfo.spouse.dob,
-      relation: "Spouse",
-      daysLeft: calculateDaysLeft(familyInfo.spouse.dob),
-      image: familyInfo.spouse.image,
-    });
-  }
-
-  if (familyInfo.marriageAnniversary?.date) {
-    events.push({
-      userId,
-      name: "Marriage Anniversary",
-      date: familyInfo.marriageAnniversary.date,
-      relation: "Marriage Anniversary",
-      daysLeft: calculateDaysLeft(familyInfo.marriageAnniversary.date),
-      image: familyInfo.marriageAnniversary.image,
-    });
-  }
-
-  // Add children's birthdays
-  familyInfo.children.forEach((child) => {
-    if (child.dob) {
-      events.push({
-        userId,
-        name: `${child.name}'s Birthday`,
-        date: child.dob,
-        relation: "Child",
-        daysLeft: calculateDaysLeft(child.dob),
-        image: child.image,
-      });
+const getFamilyMemberEvents = async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "User authentication failed. Please log in again." });
     }
-  });
 
-  // Add siblings' birthdays
-  familyInfo.siblings.forEach((sibling) => {
-    if (sibling.dob) {
-      events.push({
-        userId,
-        name: `${sibling.name}'s Birthday`,
-        date: sibling.dob,
-        relation: "Sibling",
-        daysLeft: calculateDaysLeft(sibling.dob),
-        image: sibling.image,
-      });
+    // Fetch the family info for the user
+    const familyInfo = await FamilyInfo.findOne({ userId });
+
+    if (!familyInfo || !familyInfo.familyMembers) {
+      return res.status(404).json({ success: false, message: "No family events found." });
     }
-  });
 
-  // ✅ Save all events to the database
-  await Event.deleteMany({ userId }); // Remove old events for this user
-  await Event.insertMany(events);
+    const events = familyInfo.familyMembers
+      .filter(member => member.dob) // Ensure member has a date of birth or anniversary
+      .map(member => ({
+        userId,
+        name: `${member.fullName}'s ${member.eventType}`,
+        date: member.dob,
+        relation: member.relationType,
+        image: member.image || null,
+        eventId: member.eventId || null,
+      }));
+
+    res.status(200).json({ success: true, data: events });
+  } catch (error) {
+    console.error("Error fetching family member events:", error);
+    res.status(500).json({ success: false, message: "Failed to fetch family member events." });
+  }
 };
 
-// const updateFamilyInfo = async (req, res) => {
+//latest code 
+// const updateFamilyMember = async (req, res) => {
 //   try {
-//     const userId = req.user.userId;
-//     const { relation, name, dob, anniversary } = req.body;
-//     let image = null;
+//     const userId = req.user?.userId;
+//     const { relationId } = req.params;
 
+//     if (!userId) {
+//       return res.status(401).json({ success: false, message: "User authentication failed. Please log in again." });
+//     }
+
+//     let updateData = req.body;
+
+//     // ✅ Ensure `anniversaryDate` is null if it's not valid
+//     if (!updateData.anniversaryDate || updateData.anniversaryDate === "null") {
+//       updateData.anniversaryDate = null;
+//     }
+
+//     // If an image is uploaded, update the image path
 //     if (req.file) {
-//       image = `uploads/${req.file.filename}`;
+//       const filePath = req.file.path.replace(/\\/g, "/");
+//       // Remove everything before "uploads/" to get only the relative path
+//       const relativePath = filePath.split("uploads/").pop();
+//       updateData.image = `uploads/${relativePath}`;
+//     }
+    
+//     // Find the family member
+//     const familyInfo = await FamilyInfo.findOne({ userId, "familyMembers.relationId": relationId });
+
+//     if (!familyInfo) {
+//       return res.status(404).json({ success: false, message: "Family member not found." });
 //     }
 
-//     const updateField = {};
-//     if (relation === "Father") updateField.father = { name, dob, image };
-//     if (relation === "Mother") updateField.mother = { name, dob, image };
-//     if (relation === "Wife") updateField.spouse = { name, dob, anniversary, image };
-//     if (relation.startsWith("Child")) {
-//       const childIndex = parseInt(relation.split(" ")[1]) - 1;
-//       updateField[`children.${childIndex}`] = { name, dob, image };
-//     }
-//     if (relation.startsWith("Sibling")) {
-//       const siblingIndex = parseInt(relation.split(" ")[1]) - 1;
-//       updateField[`siblings.${siblingIndex}`] = { name, dob, image };
+//     const familyMember = familyInfo.familyMembers.find((member) => member.relationId.toString() === relationId);
+
+//     if (!familyMember) {
+//       return res.status(404).json({ success: false, message: "Family member not found in records." });
 //     }
 
-//     const familyInfo = await FamilyInfo.findOneAndUpdate(
-//       { userId },
-//       { $set: updateField },
+//     // **Update FamilyInfo Schema**
+//     const updatedFamilyInfo = await FamilyInfo.findOneAndUpdate(
+//       { userId, "familyMembers.relationId": relationId },
+//       {
+//         $set: {
+//           "familyMembers.$.fullName": updateData.fullName || familyMember.fullName,
+//           "familyMembers.$.dob": updateData.dob || familyMember.dob,
+//           "familyMembers.$.anniversaryDate": updateData.anniversaryDate, // ✅ Null-safe update
+//           "familyMembers.$.relationType": updateData.relationType || familyMember.relationType,
+//           "familyMembers.$.eventType": updateData.eventType || familyMember.eventType,
+//           "familyMembers.$.image": updateData.image || familyMember.image,
+//         },
+//       },
 //       { new: true }
 //     );
 
-//     if (!familyInfo) {
-//       return res.status(404).json({ success: false, message: "Family info not found." });
+//     console.log("Updated Family Info:", updatedFamilyInfo);
+
+//     // **Update the corresponding event in EventSchema**
+//     const updatedEvent = await Event.findOneAndUpdate(
+//       { eventId: familyMember?.eventId },
+//       {
+//         $set: {
+//           name: `${updateData.fullName || familyMember.fullName}'s ${updateData.eventType || familyMember.eventType}`,
+//           date: updateData.dob || updateData.anniversaryDate, // ✅ Make sure it's correct
+//           relation: updateData.relationType || familyMember.relationType,
+//           eventType: updateData.eventType || familyMember.eventType,
+//           image: updateData.image || familyMember.image,
+//         },
+//       },
+//       { new: true }
+//     );
+// console.log(familyMember.eventId,'--------------------')
+//     if (!updatedEvent) {
+//       return res.status(404).json({ success: false, message: "Event not found." });
 //     }
 
-//     res.status(200).json({ success: true, data: familyInfo });
+//     console.log("Updated Event Info:", updatedEvent);
+
+//     res.status(200).json({
+//       success: true,
+//       message: "Family member and associated event updated successfully.",
+//       data: {
+//         updatedFamilyInfo,
+//         updatedEvent,
+//       },
+//     });
 //   } catch (error) {
-//     console.error("Error updating family info:", error);
-//     res.status(500).json({ success: false, message: "Failed to update family info." });
+//     console.error("Error updating family member and event:", error);
+//     res.status(500).json({ success: false, message: "Failed to update family member and event." });
 //   }
 // };
 
-const updateFamilyInfo = async (req, res) => {
+const updateFamilyMember = async (req, res) => {
   try {
-    const userId = req.user.userId;
-    const { relation, name, dob, anniversary } = req.body;
-    let image = req.file ? `uploads/${req.file.filename}` : null;
+    const userId = req.user?.userId;
+    const { relationId } = req.params;
 
-    const updateField = {};
-    if (relation === "Father") updateField.father = { name, dob, image };
-    if (relation === "Mother") updateField.mother = { name, dob, image };
-    if (relation === "Wife") updateField.spouse = { name, dob, anniversary, image };
-    if (relation.startsWith("Child")) {
-      const childIndex = parseInt(relation.split(" ")[1]) - 1;
-      updateField[`children.${childIndex}`] = { name, dob, image };
-    }
-    if (relation.startsWith("Sibling")) {
-      const siblingIndex = parseInt(relation.split(" ")[1]) - 1;
-      updateField[`siblings.${siblingIndex}`] = { name, dob, image };
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "User authentication failed. Please log in again." });
     }
 
-    const familyInfo = await FamilyInfo.findOneAndUpdate(
-      { userId },
-      { $set: updateField },
+    let updateData = req.body;
+
+    // ✅ Ensure `anniversaryDate` is null if it's not valid
+    if (!updateData.anniversaryDate || updateData.anniversaryDate === "null") {
+      updateData.anniversaryDate = null;
+    }
+
+    // If an image is uploaded, update the image path
+    if (req.file) {
+      const filePath = req.file.path.replace(/\\/g, "/");
+      const relativePath = filePath.split("uploads/").pop();
+      updateData.image = `uploads/${relativePath}`;
+    }
+    
+    // Find the family member
+    const familyInfo = await FamilyInfo.findOne({ userId, "familyMembers.relationId": relationId });
+
+    if (!familyInfo) {
+      return res.status(404).json({ success: false, message: "Family member not found." });
+    }
+
+    const familyMember = familyInfo.familyMembers.find((member) => member.relationId.toString() === relationId);
+
+    if (!familyMember) {
+      return res.status(404).json({ success: false, message: "Family member not found in records." });
+    }
+
+    // **Update FamilyInfo Schema**
+    await FamilyInfo.findOneAndUpdate(
+      { userId, "familyMembers.relationId": relationId },
+      {
+        $set: {
+          "familyMembers.$.fullName": updateData.fullName || familyMember.fullName,
+          "familyMembers.$.dob": updateData.dob || familyMember.dob,
+          "familyMembers.$.anniversaryDate": updateData.anniversaryDate,
+          "familyMembers.$.relationType": updateData.relationType || familyMember.relationType,
+          "familyMembers.$.eventType": updateData.eventType || familyMember.eventType,
+          "familyMembers.$.image": updateData.image || familyMember.image,
+        },
+      },
       { new: true }
     );
 
-    if (!familyInfo) {
-      return res.status(404).json({ success: false, message: "Family info not found." });
+    // **Update the corresponding event in EventSchema**
+    const updatedEvent = await Event.findOneAndUpdate(
+      { eventId: familyMember.eventId }, // ✅ Use the correct eventId
+      {
+        $set: {
+          name: `${updateData.fullName || familyMember.fullName}'s ${updateData.eventType || familyMember.eventType}`,
+          date: updateData.dob || updateData.anniversaryDate,
+          relation: updateData.relationType || familyMember.relationType,
+          eventType: updateData.eventType || familyMember.eventType,
+          image: updateData.image || familyMember.image,
+        },
+      },
+      { new: true }
+    );
+
+    if (!updatedEvent) {
+      return res.status(404).json({ success: false, message: "Event not found." });
     }
 
-    const updatedData = await FamilyInfo.findOne({ userId }); // ✅ Fetch full updated data
-    res.status(200).json({ success: true, data: updatedData }); // ✅ Send full updated data
+    res.status(200).json({ success: true, message: "Family member and event updated successfully." });
   } catch (error) {
-    console.error("Error updating family info:", error);
-    res.status(500).json({ success: false, message: "Failed to update family info." });
+    console.error("Error updating family member and event:", error);
+    res.status(500).json({ success: false, message: "Failed to update family member and event." });
   }
 };
 
 
-module.exports = { getFamilyInfo, saveFamilyInfo, familyUpload, updateFamilyInfo };
+
+
+module.exports = { getFamilyInfo, saveFamilyInfo, familyUpload, getFamilyMemberEvents,updateFamilyMember };

@@ -12,6 +12,7 @@ const userProfileSchema = new mongoose.Schema({
     location: { type: String, required: true },
     maritalStatus: { type: String, enum: ["Married", "Unmarried"], required: true },
     profileImage: { type: String },
+    profileStatus: { type: Boolean, default: false },
 }, { timestamps: true });
 
 module.exports = mongoose.model("UserProfile", userProfileSchema);
